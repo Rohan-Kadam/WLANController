@@ -1,3 +1,6 @@
+Extended Project
+
+===================================================================================
 # opencapwap-SDN-Coupler
 ===================================================================================
 
@@ -6,9 +9,9 @@ Extending the openCAPWAP v2.0 project.
 Modifications are intended to make it more suitable in SDN paradigm.
 
 
+Base Project: https://github.com/vollero/openCAPWAP
 
-
-
+===================================================================================
 # About openCAPWAP v2.0 project
 ===================================================================================
 
@@ -52,7 +55,3 @@ If you are using the SPLIT MAC mode, you must create a bridge between AC's netwo
 If you are using the LOCAL MAC mode, you must create a bridge between the WTP's AP interface and the ethernet interface.
 The DHCP server must be reachable from WTP's ethernet (LOCAL MAC) or AC's ethernet (SPLIT MAC).
 
-# opencapwap-SDN-Coupler
-Extending the openCAPWAP project. 
-
-Modifications are intended to make it more suitable in SDN paradigm.
