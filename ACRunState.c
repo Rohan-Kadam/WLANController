@@ -43,6 +43,8 @@
 #include "common.h"
 #include "ieee802_11_defs.h"
 
+#include "buffer-modifier.h"
+
 #ifdef DMALLOC
 #include "../dmalloc-5.5.0/dmalloc.h"
 #endif
@@ -626,7 +628,7 @@ CWBool ACEnterRun(int WTPIndex, CWProtocolMessage *msgPtr, CWBool dataFlag) {
 #endif
 				if(subtype == WLAN_FC_STYPE_ASSOC_REQ || subtype == WLAN_FC_STYPE_REASSOC_REQ)
 				{
-					CWLog("CW80211: Management Association request received");
+					CWLog("CW80211: Management Association request received [****** EXTRACT FROM HERE ******]");
 					
 #ifdef SPLIT_MAC
 					/* In caso di SPLIT MAC, se AC riceve AssReq deve prima generare AssResp ed inviarlo al WTP.. */
@@ -634,6 +636,8 @@ CWBool ACEnterRun(int WTPIndex, CWProtocolMessage *msgPtr, CWBool dataFlag) {
 					if(!CW80211ParseAssociationRequest(msgPtr->msg, &assRequest))
 						return CWErrorRaise(CW_ERROR_WRONG_ARG, NULL);
 					
+					buffer_main(&assRequest.BSSID[0],&assRequest.DA[0],&assRequest.SA[0]);
+
 					if(assRequest.BSSID == NULL || assRequest.DA == NULL || assRequest.SA == NULL)
 						return CW_FALSE;
 					

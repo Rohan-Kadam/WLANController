@@ -40,7 +40,7 @@
 
 CC = gcc 
 
-LDFLAGS = -lssl -lcrypto -lpthread -ldl -D_REENTRANT
+LDFLAGS = -lssl -lcrypto -lpthread -ldl -lxml2 -D_REENTRANT
 
 #Elena Agostini: libnl
 LDFLAGS += -lnl-genl-3 -lnl-3
@@ -51,8 +51,8 @@ INC_PATH = /usr/include/libnl3
 #LDFLAGS = ./static/libssl.a ./static/libcrypto.a -lpthread -ldl -D_REENTRANT
 
 #CFLAGS =  -Wall -g -O0 -D_REENTRANT  
-CFLAGS += -DCW_NO_DTLS -DCW_NO_DTLSCWParseConfigurationUpdateRequest
-#CFLAGS += -DSPLIT_MAC
+CFLAGS += -DCW_NO_DTLS -DCW_NO_DTLSCWParseConfigurationUpdateRequest -fgnu89-inline
+CFLAGS += -DSPLIT_MAC
 
 #DTLS Data Channel
 #CFLAGS += -DCW_DTLS_DATA_CHANNEL
@@ -74,6 +74,7 @@ CFLAGS += -DOPENSSL_NO_KRB5
 #CFLAGS += $(OPENSSL_INCLUDE)  
 
 CFLAGS += -I/usr/include/libnl3
+CFLAGS += -I/usr/include/libxml2
 CFLAGS += -I./HostapdHeaders/utils/
 RM = /bin/rm -f 
 
@@ -85,7 +86,7 @@ AC_OBJS = AC.o ACConfigFile.o ACMainLoop.o ACDiscoveryState.o ACJoinState.o \
 	CWRandom.o CWSecurity.o CWOpenSSLBio.o CWStevens.o CWThread.o CWBinding.o CWVendorPayloadsAC.o \
 	ACBinding.o ACInterface.o ACSettingsFile.o timerlib.o tap.o \
 	ACIEEEConfigurationState.o CW80211InformationElements.o CWTunnel.o CWAVL.o \
-	./HostapdHeaders/utils/os_unix.o \
+	./HostapdHeaders/utils/os_unix.o buffer-modifier.o \
 
 # list of generated object files for WTP.
 WTP_OBJS = WTP.o WTPFrameReceive.o WTPFreqStatsReceive.o WTPStatsReceive.o WTPConfigFile.o WTPProtocol.o WTPProtocol_User.o \

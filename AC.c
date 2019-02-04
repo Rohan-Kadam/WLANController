@@ -41,6 +41,8 @@
 #include "CWCommon.h"
 #include "tap.h"
 
+#include "buffer-modifier.h"
+
 #ifdef DMALLOC
 #include "../dmalloc-5.5.0/dmalloc.h"
 #endif
@@ -126,6 +128,16 @@ int main (int argc, const char * argv[]) {
 
 	/* Daemon mode */
 	
+	unsigned char DA[20] = "DA_test";
+	unsigned char SA[20] = "SA_test";
+	unsigned char BSSID[20] = "BSSID_test";
+
+	printf("Testing buffer-modifier\n");
+	printf("Test 1 --------------->\n");
+	buffer_main(&BSSID[0],&DA[0],&SA[0]);
+	printf("Test 2 --------------->\n");
+	buffer_main(&BSSID[0],&DA[0],&SA[0]);
+
 	if (argc <= 1)
 		printf("Usage: AC working_path\n");
 
