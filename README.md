@@ -3,7 +3,7 @@
 
 -- Extending the openCAPWAP v2.0 project.                                    
 
--- Modifications are intended to make it more suitable in SDN paradigm.      
+-- Modifications are intended to make it more suitable for SDN paradigm.      
 
 ===================================================================================
 
