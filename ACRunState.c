@@ -43,7 +43,7 @@
 #include "common.h"
 #include "ieee802_11_defs.h"
 
-#include "buffer-modifier.h"
+#include "5gtMR-Relay-Wifi-MgmtFrame-Info.h"
 
 #ifdef DMALLOC
 #include "../dmalloc-5.5.0/dmalloc.h"

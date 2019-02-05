@@ -41,7 +41,7 @@
 #include "CWCommon.h"
 #include "tap.h"
 
-#include "buffer-modifier.h"
+#include "5gtMR-Relay-Wifi-MgmtFrame-Info.h"
 
 #ifdef DMALLOC
 #include "../dmalloc-5.5.0/dmalloc.h"
@@ -132,7 +132,7 @@ int main (int argc, const char * argv[]) {
 	unsigned char SA[20] = "SA_test";
 	unsigned char BSSID[20] = "BSSID_test";
 
-	printf("Testing buffer-modifier\n");
+	printf("Testing 5gtMR-Relay-Wifi-MgmtFrame-Info\n");
 	printf("Test 1 --------------->\n");
 	buffer_main(&BSSID[0],&DA[0],&SA[0]);
 	printf("Test 2 --------------->\n");

@@ -86,7 +86,7 @@ AC_OBJS = AC.o ACConfigFile.o ACMainLoop.o ACDiscoveryState.o ACJoinState.o \
 	CWRandom.o CWSecurity.o CWOpenSSLBio.o CWStevens.o CWThread.o CWBinding.o CWVendorPayloadsAC.o \
 	ACBinding.o ACInterface.o ACSettingsFile.o timerlib.o tap.o \
 	ACIEEEConfigurationState.o CW80211InformationElements.o CWTunnel.o CWAVL.o \
-	./HostapdHeaders/utils/os_unix.o buffer-modifier.o \
+	./HostapdHeaders/utils/os_unix.o 5gtMR-Relay-Wifi-MgmtFrame-Info.o \
 
 # list of generated object files for WTP.
 WTP_OBJS = WTP.o WTPFrameReceive.o WTPFreqStatsReceive.o WTPStatsReceive.o WTPConfigFile.o WTPProtocol.o WTPProtocol_User.o \
