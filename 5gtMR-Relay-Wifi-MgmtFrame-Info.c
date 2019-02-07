@@ -19,6 +19,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define TRUE 1
+#define FALSE 0
+
 #define DOCNAME "buffer.xml"
 
 unsigned char bm_bssid[50];
