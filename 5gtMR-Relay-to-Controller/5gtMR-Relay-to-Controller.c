@@ -97,7 +97,7 @@ int main(int argc,char *argv[])
 	}
 
         //Add new watch, by providing inotify fd, file path and notify action
-        wd = inotify_add_watch(ifd, "/home/osboxes/VBS/openCAPWAP_modified/", IN_MODIFY|IN_CREATE|IN_DELETE);
+        wd = inotify_add_watch(ifd, "/home/osboxes/VBS/opencapwap-SDN-Coupler/", IN_MODIFY|IN_CREATE|IN_DELETE);
         if (wd < 0)
         {        
                 errexit("cannot add inotify watch");
@@ -164,7 +164,7 @@ int main(int argc,char *argv[])
 				if( (strcmp(ev->name,"buffer.xml") == 0) && (ev->mask & IN_MODIFY) )
 				{
 					printf("Sent file to controller over UDP\n");
-					fd = open("../buffer.xml", O_RDWR);
+					fd = open("/home/osboxes/VBS/opencapwap-SDN-Coupler/buffer.xml", O_RDWR);
 					printf("File descp=%d\n",fd);
 		        		do	
 			        	{
