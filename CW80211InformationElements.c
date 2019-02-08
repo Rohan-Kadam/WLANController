@@ -1597,7 +1597,7 @@ CWBool CW80211ParseDataFrameToDS(char * frame, struct CWFrameDataHdr * dataFrame
 	if(!CW80211ParseFrameIESeqCtrl((frame+offset), &(offset), &(dataFrame->seqCtrl)))
 		return CW_FALSE;
 		
-	CWLog("Parse seqctl: %d, ntohs: %d", dataFrame->seqCtrl, ntohs(dataFrame->seqCtrl));
+	//CWLog("Parse seqctl: %d, ntohs: %d", dataFrame->seqCtrl, ntohs(dataFrame->seqCtrl));
 
 	return CW_TRUE;
 }
