@@ -169,18 +169,27 @@ CWBool CWParseIEEEConfigurationRequestMessage (char *msg,
 		unsigned short int len=0;	/* = CWProtocolRetrieve16(&completeMsg); */
 		
 		CWParseFormatMsgElem(&completeMsg,&type,&len);
-		// CWLog("Parsing Message Element: %u, len: %u complete: %d", type, len, completeMsg.offset);
+		CWLog("Parsing Message Element: %u, len: %u complete: %d", type, len, completeMsg.offset);
 
 		switch(type) {
 			case CW_MSG_ELEMENT_IEEE80211_ADD_WLAN_CW_TYPE:
-				if(!(CWParseACAddWlan(&completeMsg, len, interfaceInfo))) return CW_FALSE;
-				break;
+				{
+					CWLog("ADD WLAN");
+					if(!(CWParseACAddWlan(&completeMsg, len, interfaceInfo))) return CW_FALSE;
+					break;
+				}
 			case CW_MSG_ELEMENT_IEEE80211_DELETE_WLAN_CW_TYPE:
-				if(!(CWParseACDelWlan(&completeMsg, len, interfaceInfo))) return CW_FALSE;
-				break;
+				{
+					CWLog("DELETE WLAN");
+					if(!(CWParseACDelWlan(&completeMsg, len, interfaceInfo))) return CW_FALSE;
+					break;
+				}
 			case CW_MSG_ELEMENT_IEEE80211_UPDATE_WLAN_CW_TYPE:
-				if(!(CWParseACUpdateWlan(&completeMsg, len, interfaceInfo))) return CW_FALSE;
-				break;
+				{
+					CWLog("UPDATE WLAN");
+					if(!(CWParseACUpdateWlan(&completeMsg, len, interfaceInfo))) return CW_FALSE;
+					break;
+				}
 			default:
 				return CWErrorRaise(CW_ERROR_INVALID_FORMAT, "Unrecognized Message Element");
 		}

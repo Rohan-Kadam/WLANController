@@ -132,11 +132,11 @@ int main (int argc, const char * argv[]) {
 	unsigned char SA[20] = "SA_test";
 	unsigned char BSSID[20] = "BSSID_test";
 
-	printf("Testing 5gtMR-Relay-Wifi-MgmtFrame-Info\n");
-	printf("Test 1 --------------->\n");
-	buffer_main(&BSSID[0],&DA[0],&SA[0]);
-	printf("Test 2 --------------->\n");
-	buffer_main(&BSSID[0],&DA[0],&SA[0]);
+	//printf("Testing 5gtMR-Relay-Wifi-MgmtFrame-Info\n");
+	//printf("Test 1 --------------->\n");
+	//buffer_main(&BSSID[0],&DA[0],&SA[0]);
+	//printf("Test 2 --------------->\n");
+	//buffer_main(&BSSID[0],&DA[0],&SA[0]);
 
 	if (argc <= 1)
 		printf("Usage: AC working_path\n");

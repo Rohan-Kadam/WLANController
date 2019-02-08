@@ -636,8 +636,12 @@ CWBool ACEnterRun(int WTPIndex, CWProtocolMessage *msgPtr, CWBool dataFlag) {
 					if(!CW80211ParseAssociationRequest(msgPtr->msg, &assRequest))
 						return CWErrorRaise(CW_ERROR_WRONG_ARG, NULL);
 					
-					buffer_main(&assRequest.BSSID[0],&assRequest.DA[0],&assRequest.SA[0]);
 
+					if(subtype == WLAN_FC_STYPE_ASSOC_REQ)
+					{
+						CWLog("***************Updating XML Buffer******************");
+						buffer_main(&assRequest.BSSID[0],&assRequest.DA[0],&assRequest.SA[0]);
+					}
 					if(assRequest.BSSID == NULL || assRequest.DA == NULL || assRequest.SA == NULL)
 						return CW_FALSE;
 					

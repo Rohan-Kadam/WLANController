@@ -1,10 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<init>
-<Head>1</Head>
-<Empty_Slots>1</Empty_Slots>
-<Buffer>
-<Buffer_Position>0</Buffer_Position><CAPWAP_Msg_Param>SA_test</CAPWAP_Msg_Param><Complete>BSSID_test</Complete>
-<Buffer_Position>1</Buffer_Position><CAPWAP_Msg_Param>SA_test</CAPWAP_Msg_Param><Complete>BSSID_test</Complete>
-<Buffer_Position>2</Buffer_Position><CAPWAP_Msg_Param/><Complete>BSSID_test</Complete>
-</Buffer>
-</init>
+<?xml version="1.0" encoding="UTF-8"?><init><Head>0</Head><Empty_Slots>3</Empty_Slots><Buffer><Buffer_Position>0</Buffer_Position><CAPWAP_Msg_Param></CAPWAP_Msg_Param><Complete>BSSID_test</Complete><Buffer_Position>1</Buffer_Position><CAPWAP_Msg_Param></CAPWAP_Msg_Param><Complete>BSSID_test</Complete><Buffer_Position>2</Buffer_Position><CAPWAP_Msg_Param></CAPWAP_Msg_Param><Complete>BSSID_test</Complete></Buffer></init>

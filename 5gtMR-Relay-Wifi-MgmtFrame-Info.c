@@ -112,6 +112,9 @@ static void parse_buffer(xmlDocPtr doc, xmlNodePtr cur)
 
         xmlChar *key;
         cur = cur->xmlChildrenNode;
+
+        CWLog("Inside parse buffer");
+
         while (cur != NULL) {
                 //                printf("Entering Buffer_Position-->\n");
                 if ((!xmlStrcmp(cur->name, (const xmlChar *)"Buffer_Position"))) {
@@ -203,7 +206,7 @@ static void parse_init(xmlDocPtr doc, xmlNodePtr cur)
         
         while (cur != NULL) {
                 
-                
+                CWLog("Inside parse init");
                 if ((!xmlStrcmp(cur->name, (const xmlChar *)"Head"))) {
                         
                         if(head_count < max_head_count)
@@ -232,7 +235,7 @@ static void parse_init(xmlDocPtr doc, xmlNodePtr cur)
                         xmlFree(key);
         
                 }
- 
+ 		
                 if ((!xmlStrcmp(cur->name, (const xmlChar *)"Buffer"))) {
                         key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
                         printf("\nBuffer:\n");
@@ -258,13 +261,15 @@ int buffer_main(unsigned char* bssid,unsigned char* dest_addr,unsigned char* sou
         printf("************* INSIDE NEW CODE BLOCK *************\n");
         printf("Copied to local array: Ref to Original Copy [%s] Local Copy [%s]\n",bssid,bm_bssid);
 
+	CWLog("**********************xml Parse File");
         doc = xmlParseFile(DOCNAME);
 
         if (doc == NULL) {
                 fprintf(stderr, "Document not parsed successfully. \n");
                 return (0);
         }
-
+	
+	CWLog("*********************Get Root");
         cur = xmlDocGetRootElement(doc);
 
         if (cur == NULL) {
@@ -273,17 +278,21 @@ int buffer_main(unsigned char* bssid,unsigned char* dest_addr,unsigned char* sou
                 return (0);
         }
 
+	CWLog("************************String compare");
         if (xmlStrcmp(cur->name, (const xmlChar *)"init")) {
                 fprintf(stderr, "document of the wrong type, root node != config");
                 cur = cur->xmlChildrenNode;
                 xmlFreeDoc(doc);
                 return (0);
         }
+	CWLog("************************Parse init call");
         parse_init(doc, cur);
-	//xmlSaveFile("output.xml", cur);
-	xmlSaveFormatFileEnc("buffer.xml", doc, "UTF-8", 1);
-
-        printf("\n\n\n\n");
+	
+	CWLog("************************Save file");
+	xmlSaveFile("buffer.xml", cur);
+	//xmlSaveFormatFileEnc("buffer.xml", doc, "UTF-8", 1);
+	
+        //printf("\n\n\n\n");
 
         return (0);
 }
