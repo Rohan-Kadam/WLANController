@@ -27,7 +27,7 @@
 unsigned char bm_bssid[50];
 unsigned char bm_dest_addr[50];
 unsigned char bm_source_addr[50]={0};
-char buffer[50];
+char buffer[100];
 xmlChar head_count_string[50];
 xmlChar empty_count_string[50];
 
@@ -262,7 +262,7 @@ int buffer_main(unsigned char* bssid,unsigned char* dest_addr,unsigned char* sou
         CWLog("************* INSIDE NEW CODE BLOCK *************\n");
         CWLog("Association received from %02x:%02x:...\n",bm_source_addr[0],bm_source_addr[1]);
         
-        sprintf(buffer,"Association received from UE:%02x:%02x:%02x:%02x:%02x:%02x, at AP:%02x:%02x:%02x:%02x:%02x:%02x\n",bm_source_addr[0],
+        sprintf(buffer,"Association received from UE:%02x:%02x:%02x:%02x:%02x:%02x at AP:%02x:%02x:%02x:%02x:%02x:%02x\n",bm_source_addr[0],
                 bm_source_addr[1],bm_source_addr[2],bm_source_addr[3],bm_source_addr[4],
                 bm_source_addr[5],bm_bssid[0],bm_bssid[1],bm_bssid[2],bm_bssid[3],
                 bm_bssid[4],bm_bssid[5]);
