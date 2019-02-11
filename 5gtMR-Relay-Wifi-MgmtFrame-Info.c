@@ -26,7 +26,8 @@
 
 unsigned char bm_bssid[50];
 unsigned char bm_dest_addr[50];
-unsigned char bm_source_addr[50];
+unsigned char bm_source_addr[50]={0};
+char buffer[50];
 xmlChar head_count_string[50];
 xmlChar empty_count_string[50];
 
@@ -154,6 +155,7 @@ static void parse_buffer(xmlDocPtr doc, xmlNodePtr cur)
 
                         if(Update_Buffer_Block == TRUE)
                         {
+                        /*
                                 strcat(bm_source_addr[0],":");
                                 strcat(bm_source_addr[0],bm_source_addr[1]);
                                 strcat(bm_source_addr[0],":");
@@ -166,8 +168,9 @@ static void parse_buffer(xmlDocPtr doc, xmlNodePtr cur)
                                 strcat(bm_source_addr[0],bm_source_addr[5]);
                                 strcat(bm_source_addr[0],":");
                                 strcat(bm_source_addr[0],bm_source_addr[6]);
-
-                                xmlNodeSetContent(cur,bm_source_addr);              
+                        */
+                                //xmlNodeSetContent(cur,bm_source_addr);
+                                xmlNodeSetContent(cur,buffer);              
                         }
                         
                         //Read Modified Content        
@@ -258,6 +261,12 @@ int buffer_main(unsigned char* bssid,unsigned char* dest_addr,unsigned char* sou
         
         CWLog("************* INSIDE NEW CODE BLOCK *************\n");
         CWLog("Association received from %02x:%02x:...\n",bm_source_addr[0],bm_source_addr[1]);
+        
+        sprintf(buffer,"Association received from UE:%02x:%02x:%02x:%02x:%02x:%02x, at AP:%02x:%02x:%02x:%02x:%02x:%02x\n",bm_source_addr[0],
+                bm_source_addr[1],bm_source_addr[2],bm_source_addr[3],bm_source_addr[4],
+                bm_source_addr[5],bm_bssid[0],bm_bssid[1],bm_bssid[2],bm_bssid[3],
+                bm_bssid[4],bm_bssid[5]);
+        
         printf("************* INSIDE NEW CODE BLOCK *************\n");
         printf("Copied to local array: Ref to Original Copy [%s] Local Copy [%s]\n",bssid,bm_bssid);
 
@@ -289,8 +298,8 @@ int buffer_main(unsigned char* bssid,unsigned char* dest_addr,unsigned char* sou
         parse_init(doc, cur);
 	
 	CWLog("************************Save file");
-	xmlSaveFile("buffer.xml", cur);
-	//xmlSaveFormatFileEnc("buffer.xml", doc, "UTF-8", 1);
+	//xmlSaveFile("buffer.xml", cur);
+	xmlSaveFormatFileEnc("buffer.xml", doc, "UTF-8", 1);
 	
         //printf("\n\n\n\n");
 
