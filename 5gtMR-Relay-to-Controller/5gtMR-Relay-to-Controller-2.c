@@ -23,7 +23,7 @@
 
 #define TRUE 1
 #define FALSE 0
-#define DOCNAME "test/test.xml"
+#define DOCNAME "../buffer.xml"
 #define BUFSZ   16384
 
 
@@ -323,7 +323,7 @@ int main(int argc,char *argv[])
 	}
 
     //Add new watch, by providing inotify fd, file path and notify action
-    wd = inotify_add_watch(ifd, "/home/osboxes/VBS/opencapwap-SDN-Coupler/5gtMR-Relay-to-Controller/test/", IN_MODIFY);
+    wd = inotify_add_watch(ifd, "/home/osboxes/VBS/opencapwap-SDN-Coupler/", IN_MODIFY);
     if (wd < 0)
     {        
         errexit("cannot add inotify watch");
@@ -388,7 +388,7 @@ int main(int argc,char *argv[])
               	//         (ev->mask & IN_DELETE) ? "deleted" :
               	//         "modified");
                         	
-				if( (strcmp(ev->name,"test.xml") == 0) && (ev->mask & IN_MODIFY) )
+				if( (strcmp(ev->name,"buffer.xml") == 0) && (ev->mask & IN_MODIFY) )
 				{
 					printf("Sent file to controller over UDP\n");
 	
