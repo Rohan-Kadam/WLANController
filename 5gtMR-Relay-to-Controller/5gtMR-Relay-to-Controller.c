@@ -76,7 +76,7 @@ int main(int argc,char *argv[])
 	FILE *fd;
         char buf[BUFSZ],file_buffer[500];
         struct inotify_event *ev;
-
+	
 	if(argc != 2)
         {
                 perror("Too few arguments\n");
@@ -84,7 +84,7 @@ int main(int argc,char *argv[])
         }
 
 	strcpy(ctrl_ipaddr,argv[1]);
-	printf("%s %s\n",argv[1],ctrl_ipaddr);
+	//printf("%s %s\n",argv[1],ctrl_ipaddr);
 
 	//================================================================================================================
 	//Inotify Init
@@ -95,9 +95,9 @@ int main(int argc,char *argv[])
 	{
                 errexit("cannot obtain an inotify instance");
 	}
-
+	printf("inotify init\n");
         //Add new watch, by providing inotify fd, file path and notify action
-        wd = inotify_add_watch(ifd, "/home/osboxes/VBS/opencapwap-SDN-Coupler/", IN_MODIFY|IN_CREATE|IN_DELETE);
+        wd = inotify_add_watch(ifd, "/home/osboxes/VBS/opencapwap-SDN-Coupler/5gtMR-Relay-to-Controller/", IN_MODIFY|IN_CREATE|IN_DELETE);
         if (wd < 0)
         {        
                 errexit("cannot add inotify watch");
@@ -113,7 +113,7 @@ int main(int argc,char *argv[])
         	perror("UDP Socket Initialization Failed\n");
         	exit(2);
         }
-
+	printf("Socket init done\n");
 	//FOREVER LOOP
         while (1) 
 	{
