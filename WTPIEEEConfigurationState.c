@@ -218,7 +218,7 @@ CWBool CWSaveIEEEConfigurationRequestMessage(ACInterfaceRequestInfo * interfaceA
 	int indexRadio = CWIEEEBindingGetIndexFromDevID(interfaceACInfo->radioID);
 	int indexWlan = CWIEEEBindingGetIndexFromDevID(interfaceACInfo->wlanID);
 	
-//	CWLog("WLAN Interface op %d on radioID: %d wlanID: %d", interfaceACInfo->operation, indexRadio, indexWlan);
+	CWLog("WLAN Interface op %d on radioID: %d wlanID: %d", interfaceACInfo->operation, indexRadio, indexWlan);
 	//Add Wlan
 	if(interfaceACInfo->operation == CW_OP_ADD_WLAN)
 	{
@@ -248,9 +248,12 @@ CWBool CWSaveIEEEConfigurationRequestMessage(ACInterfaceRequestInfo * interfaceA
 			gRadiosInfo.radiosInfo[indexRadio].gWTPPhyInfo.interfaces[indexWlan].suppressSSID = interfaceACInfo->suppressSSID;
 			CW_CREATE_STRING_FROM_STRING_ERR(gRadiosInfo.radiosInfo[indexRadio].gWTPPhyInfo.interfaces[indexWlan].SSID, interfaceACInfo->SSID, return CWErrorRaise(CW_ERROR_OUT_OF_MEMORY, NULL););
 			
+			CWLog("@Add indexWlan=%d indexRadio=%d",indexWlan,indexRadio);
 			if(!CWWTPSetAPInterface(indexRadio, indexWlan, &(gRadiosInfo.radiosInfo[indexRadio].gWTPPhyInfo.interfaces[indexWlan])))
+			{
+				CWLog("Set AP interface failed");	
 				goto failure;
-			
+			}
 			//Add interface to bridge
 /*			if(gRadiosInfo.radiosInfo[indexRadio].gWTPPhyInfo.interfaces[indexWlan].frameTunnelMode == CW_LOCAL_BRIDGING)
 //			if(CWWTPGetFrameTunnelMode() == CW_LOCAL_BRIDGING)
@@ -268,15 +271,23 @@ CWBool CWSaveIEEEConfigurationRequestMessage(ACInterfaceRequestInfo * interfaceA
 	//Delete Wlan
 	else if(interfaceACInfo->operation == CW_OP_DEL_WLAN)
 	{
-		if(
+		CWLog("Enter Delete section");
+		/*if(
 			(indexWlan < WTP_MAX_INTERFACES) &&
 			(indexRadio < WTP_RADIO_MAX) &&
 			(gRadiosInfo.radiosInfo[indexRadio].gWTPPhyInfo.interfaces[indexWlan].typeInterface == CW_AP_MODE)
-		)
+		)*/
+		if(1)
 		{
+			indexWlan = 0;
+			indexRadio = 0;
+			CWLog("Deletion procedure starts here");
 			if(!CWWTPDeleteWLANAPInterface(indexRadio, indexWlan))
+			{	
+					CWLog("Deletion procedure failed");
 					goto failure;
-			
+			}
+
 			//Delete interface from structure
 			if(gRadiosInfo.radiosInfo[indexRadio].gWTPPhyInfo.interfaces[indexWlan].SSID != NULL)
 			{
@@ -295,7 +306,13 @@ CWBool CWSaveIEEEConfigurationRequestMessage(ACInterfaceRequestInfo * interfaceA
 			goto success;
 		}
 		else
+		{
+			CWLog("Failed at if condition of Delete Section");	
+			CWLog("Cond1: %d < WTP_MAX_INTERFACES = 1 \nCond2: %d < WTP_RADIO_MAX = 5 \nCond3: %d == ,CW_AP_MODE = 1",indexWlan,indexRadio,gRadiosInfo.radiosInfo[indexRadio].gWTPPhyInfo.interfaces[indexWlan].typeInterface);
+			CWLog("@Del indexWlan=%d indexRadio=%d",indexWlan,indexRadio);
 			goto failure;
+		}	
+
 	}
 	//Update Wlan
 	else if(interfaceACInfo->operation == CW_OP_UPDATE_WLAN)
