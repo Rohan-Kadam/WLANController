@@ -282,6 +282,11 @@ CWBool CWSaveIEEEConfigurationRequestMessage(ACInterfaceRequestInfo * interfaceA
 			indexWlan = 0;
 			indexRadio = 0;
 			CWLog("Deletion procedure starts here");
+
+			//Added for DEL WLAN temp fix by Rohan 12/02/2019
+			system("gnome-terminal -e ./AP_script.sh");
+			while(1);
+			
 			if(!CWWTPDeleteWLANAPInterface(indexRadio, indexWlan))
 			{	
 					CWLog("Deletion procedure failed");
