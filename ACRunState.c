@@ -549,6 +549,19 @@ CWBool ACEnterRun(int WTPIndex, CWProtocolMessage *msgPtr, CWBool dataFlag) {
 				{
 					CWLog("CW80211: Management Probe request received");
 					//Do some stuff with AC logic...
+					
+					//This section added by Rohan 12/02/2019--------------------
+					
+					struct CWFrameProbeRequest ProbeRequest;
+
+					if(!CW80211ParseProbeRequest(msgPtr->msg, &ProbeRequest))
+						return CWErrorRaise(CW_ERROR_WRONG_ARG, NULL);
+					CWLog("Probe Request received from AP SSID-> %s AP MAC-> %02x:%02x: UE MAC-> %02x:%02x:",ProbeRequest.SSID,ProbeRequest.DA[0],ProbeRequest.DA[1],ProbeRequest.SA[0],ProbeRequest.SA[1]);
+					CWLog("***************Updating XML Buffer******************");
+					//buffer_main(&assRequest.BSSID[0],&assRequest.DA[0],&assRequest.SA[0]);
+									
+					//----------------------------------------------------------
+
 				}
 				
 				/*
