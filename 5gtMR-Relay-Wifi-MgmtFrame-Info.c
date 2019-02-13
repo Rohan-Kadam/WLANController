@@ -255,22 +255,38 @@ int buffer_main(unsigned char* bssid,unsigned char* dest_addr,unsigned char* sou
         xmlDocPtr doc;
         xmlNodePtr cur;
 
+        //Not needed, can be removed
         strcpy(bm_bssid,bssid);
         strcpy(bm_dest_addr,dest_addr);
         strcpy(bm_source_addr,source_addr);                
         
-        CWLog("************* INSIDE NEW CODE BLOCK *************\n");
-        CWLog("Association received from %02x:%02x:...\n",bm_source_addr[0],bm_source_addr[1]);
+        CWLog("Received ---> %s <--- for XML Buffer update",bm_dest_addr);
+
+
+        //CWLog("************* INSIDE NEW CODE BLOCK *************\n");
         
-        sprintf(buffer,"Association received from UE:%02x:%02x:%02x:%02x:%02x:%02x at AP:%02x:%02x:%02x:%02x:%02x:%02x\n",bm_source_addr[0],
+        if(strcmp(bm_dest_addr,"Association") == 0)        
+        {        
+                CWLog("######### Association received from %02x:%02x:...\n",bm_source_addr[0],bm_source_addr[1]);
+        
+                sprintf(buffer,"Association received from UE:%02x:%02x:%02x:%02x:%02x:%02x at AP:%02x:%02x:%02x:%02x:%02x:%02x\n",bm_source_addr[0],
                 bm_source_addr[1],bm_source_addr[2],bm_source_addr[3],bm_source_addr[4],
                 bm_source_addr[5],bm_bssid[0],bm_bssid[1],bm_bssid[2],bm_bssid[3],
                 bm_bssid[4],bm_bssid[5]);
+        }
+        else
+        {
+                CWLog("Probe request received from %02x:%02x:...\n",bm_source_addr[0],bm_source_addr[1]);
         
-        printf("************* INSIDE NEW CODE BLOCK *************\n");
-        printf("Copied to local array: Ref to Original Copy [%s] Local Copy [%s]\n",bssid,bm_bssid);
+                sprintf(buffer,"Probe request received from UE:%02x:%02x:%02x:%02x:%02x:%02x at AP:%s\n",bm_source_addr[0],
+                bm_source_addr[1],bm_source_addr[2],bm_source_addr[3],bm_source_addr[4],
+                bm_source_addr[5],bm_bssid);
+               
+        }
+        //printf("************* INSIDE NEW CODE BLOCK *************\n");
+        //printf("Copied to local array: Ref to Original Copy [%s] Local Copy [%s]\n",bssid,bm_bssid);
 
-	CWLog("**********************xml Parse File");
+	//CWLog("**********************xml Parse File");
         doc = xmlParseFile(DOCNAME);
 
         if (doc == NULL) {
@@ -278,7 +294,7 @@ int buffer_main(unsigned char* bssid,unsigned char* dest_addr,unsigned char* sou
                 return (0);
         }
 	
-	CWLog("*********************Get Root");
+	//CWLog("*********************Get Root");
         cur = xmlDocGetRootElement(doc);
 
         if (cur == NULL) {
@@ -287,7 +303,7 @@ int buffer_main(unsigned char* bssid,unsigned char* dest_addr,unsigned char* sou
                 return (0);
         }
 
-	CWLog("************************String compare");
+	//CWLog("************************String compare");
         if (xmlStrcmp(cur->name, (const xmlChar *)"init")) {
                 fprintf(stderr, "document of the wrong type, root node != config");
                 cur = cur->xmlChildrenNode;
