@@ -437,8 +437,25 @@ CWBool CW80211ParseFrameIESSID(char * frameReceived, int * offsetFrameReceived, 
 	
 	short int len = frameReceived[1];
 	if(len == 0)
-		return CW_FALSE;
+	{
+		CWLog("UE Detected, No SSID");	
+		//UE_SSID
+		char * ue_ssid = "UE";
+		short int ue_ssid_len = strlen(ue_ssid);
+		//len = ue_ssid_len;
 		
+		(*offsetFrameReceived)++;
+	
+		CW_CREATE_ARRAY_CALLOC_ERR((*value), ue_ssid_len+1, char, {CWErrorRaise(CW_ERROR_OUT_OF_MEMORY, NULL); return CW_FALSE;});
+		CW_COPY_MEMORY((*value),ue_ssid, ue_ssid_len);
+		
+		//Added zero length since no SSID for UEs
+		//Next field will start just after SSID Length
+		(*offsetFrameReceived) += len;
+		
+		return CW_TRUE;
+		//return CW_FALSE;
+	}	
 	(*offsetFrameReceived)++;
 	
 	CW_CREATE_ARRAY_CALLOC_ERR((*value), len+1, char, {CWErrorRaise(CW_ERROR_OUT_OF_MEMORY, NULL); return CW_FALSE;});
@@ -451,14 +468,18 @@ CWBool CW80211ParseFrameIESSID(char * frameReceived, int * offsetFrameReceived, 
 CWBool CW80211ParseFrameIESupportedRates(char * frameReceived, int * offsetFrameReceived, char ** value, int * lenIE) {
 	
 	if(frameReceived[0] != IE_TYPE_SUPP_RATES)
+	{	
+		CWLog("supportedRates Failed 1");
 		return CW_FALSE;
-	
+	}
 	(*offsetFrameReceived)++;
 	
 	short int len = frameReceived[1];
 	if(len == 0)
+	{	
+		CWLog("supportedRates Failed 2");
 		return CW_FALSE;
-	
+	}
 	(*offsetFrameReceived)++;	
 
 	(*lenIE) = len;
@@ -1292,6 +1313,75 @@ unsigned char *  CW80211AssembleDataFrameHdr(unsigned char * SA, unsigned char *
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
 /* -------------------- PARSE -------------------- */
+
+//Debug ParseProbeRequest function by Rohan 13/02/2019
+//Original is commented below this debug function.
+CWBool CW80211ParseProbeRequest(char * frame, struct CWFrameProbeRequest * probeRequest) {
+	int offset=0;
+	
+	if(probeRequest == NULL)
+	{
+		CWLog("fail 1");	
+		return CW_FALSE;
+	}
+	//Frame Control
+	if(!CW80211ParseFrameIEControl(frame, &(offset), &(probeRequest->frameControl)))
+	{
+		CWLog("fail 2");	
+		return CW_FALSE;
+	}	
+	//Duration
+	if(!CW80211ParseFrameIEControl((frame+offset), &(offset), &(probeRequest->duration)))
+	{
+		CWLog("fail 3");	
+		return CW_FALSE;
+	}		
+	//DA
+	if(!CW80211ParseFrameIEAddr((frame+offset), &(offset), probeRequest->DA))
+	{
+		CWLog("fail 4");	
+		return CW_FALSE;
+	}	
+	//SA
+	if(!CW80211ParseFrameIEAddr((frame+offset), &(offset), probeRequest->SA))
+	{
+		CWLog("fail 5");	
+		return CW_FALSE;
+	}		
+	//BSSID
+	if(!CW80211ParseFrameIEAddr((frame+offset), &(offset), probeRequest->BSSID))
+	{
+		CWLog("fail 6");	
+		return CW_FALSE;
+	}	
+	//Seq Ctrl
+	if(!CW80211ParseFrameIESeqCtrl((frame+offset), &(offset), &(probeRequest->seqCtrl)))
+	{
+		CWLog("fail 7");	
+		return CW_FALSE;
+	}	
+	//Add parsing variable elements
+	if(!CW80211ParseFrameIESSID((frame+offset), &(offset), &(probeRequest->SSID)))
+	{
+		CWLog("fail 8");	
+		return CW_FALSE;
+	}		
+	//Supported Rates
+	if(!CW80211ParseFrameIESupportedRates((frame+offset), &(offset), &(probeRequest->supportedRates),  &(probeRequest->supportedRatesLen)))
+	{
+		CWLog("fail 9");	
+		return CW_FALSE;
+	}		
+	//Extended Supported Rates
+	if(!CW80211ParseFrameIEExtendedSupportedRates((frame+offset), &(offset), &(probeRequest->extSupportedRates),  &(probeRequest->extSupportedRatesLen)))
+		probeRequest->extSupportedRatesLen=0;
+		
+	return CW_TRUE;
+}
+
+
+
+/*
 CWBool CW80211ParseProbeRequest(char * frame, struct CWFrameProbeRequest * probeRequest) {
 	int offset=0;
 	
@@ -1336,6 +1426,11 @@ CWBool CW80211ParseProbeRequest(char * frame, struct CWFrameProbeRequest * probe
 		
 	return CW_TRUE;
 }
+
+*/
+
+
+
 
 CWBool CW80211ParseAuthRequest(char * frame, struct CWFrameAuthRequest * authRequest) {
 	int offset=0;
