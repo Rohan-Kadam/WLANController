@@ -98,23 +98,34 @@ void CW80211EventProcess(WTPBSSInfo * WTPBSSInfoPtr, int cmd, struct nlattr **tb
 	
 	if(!CW80211ParseFrameIEControl(frameReceived, &(offsetFrameReceived), &fc))
 		return;
-	
+
+		
 	/* +++ PROBE Request/Response: non aggiungo handler della STA fino ad un auth +++ */
 	if (WLAN_FC_GET_TYPE(fc) == WLAN_FC_TYPE_MGMT && WLAN_FC_GET_STYPE(fc) == WLAN_FC_STYPE_PROBE_REQ)
 	{
 		struct CWFrameProbeRequest probeRequest;
+
+		//Added by Rohan 12/02/2019	
+		CWLog("RX Probe request -- PROBE Debug line");
+		
 		if(!CW80211ParseProbeRequest(frameReceived, &probeRequest))
 		{
+			CWLog("Parse Probe Request failed -- PROBE Debug line");
 			CWErrorRaise(CW_ERROR_OUT_OF_MEMORY, NULL);
 			return;
 		}
 		
-		if(CWCompareEthernetAddress(probeRequest.SSID, WTPBSSInfoPtr->interfaceInfo->SSID) != 0)
+		CWLog("SSID: %s",probeRequest.SSID);
+		CWLog("DA: %02x:%02x: and SA: %02x:%02x:",probeRequest.DA[0],probeRequest.DA[1],probeRequest.SA[0],probeRequest.SA[1]);
+		CWLog("MySSID: %s",WTPBSSInfoPtr->interfaceInfo->SSID);	
+
+		/*if(CWCompareEthernetAddress(probeRequest.SSID, WTPBSSInfoPtr->interfaceInfo->SSID) != 0)
 		{
 			//CWLog("[80211] SSID is not the same of this interface. Aborted");
+			CWLog("Compare Ethernet Address failed -- PROBE Debug line");
 			return;
 		}
-		
+		*/
 		CWLog("[80211] ______ Probe Request Received");
 		
 		
