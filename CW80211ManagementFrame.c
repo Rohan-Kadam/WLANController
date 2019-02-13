@@ -106,6 +106,7 @@ void CW80211EventProcess(WTPBSSInfo * WTPBSSInfoPtr, int cmd, struct nlattr **tb
 		struct CWFrameProbeRequest probeRequest;
 
 		//Added by Rohan 12/02/2019	
+		int ret;
 		CWLog("RX Probe request -- PROBE Debug line");
 		
 		if(!CW80211ParseProbeRequest(frameReceived, &probeRequest))
@@ -117,8 +118,35 @@ void CW80211EventProcess(WTPBSSInfo * WTPBSSInfoPtr, int cmd, struct nlattr **tb
 		
 		CWLog("SSID: %s",probeRequest.SSID);
 		CWLog("DA: %02x:%02x: and SA: %02x:%02x:",probeRequest.DA[0],probeRequest.DA[1],probeRequest.SA[0],probeRequest.SA[1]);
-		CWLog("MySSID: %s",WTPBSSInfoPtr->interfaceInfo->SSID);	
+		CWLog("MySSID: %s",WTPBSSInfoPtr->interfaceInfo->SSID);
 
+		//temp fix by Rohan 13/02/2019
+		//fix needed to inform Controller,that Probe Resquest was captured at which AP
+		//So sending SSID of WTP in SSID field 
+		//Originally SSID field holds SSID of device 
+		//(in case of unassociated UE, we have no SSID)
+		//
+		//This temp fix will create problem if Access point SSID is more than 4 character long
+		//Hence added if condition
+		//AP00 AP02 AP99 ABCD 1234 will work, but AP00x ABCDE 12345 won't work
+		//probeRequest.SSID = WTPBSSInfoPtr->interfaceInfo->SSID;
+		//
+		//temp fix not working, since WTP send frame to AC and AC at its ends re-parses it
+		//again. Thus changes made below are replaced by "UE" string 
+		//
+		//PROBE ORIGIN problem unresolved - Rohan 13/02/2019
+		//Controller unable to trace which AP intercepted a particular probe frame
+		//May be solution: Add vendor specific field in 802.11 Probe Request Mgmt Frame	
+		
+		if((strlen(probeRequest.SSID)) == 4)
+		{	
+			ret = sprintf(probeRequest.SSID,"%s",WTPBSSInfoPtr->interfaceInfo->SSID);
+			CWLog("Changed SSID: %s and sprintf ret = %d",probeRequest.SSID, ret);
+		}
+		//bcopy(probeRequest.SSID,WTPBSSInfoPtr->interfaceInfo->SSID,5);	
+		
+		//Commented by Rohan 12/02/2019
+		//Blocks Probe from all unassociated UEs and other AP in vicinity
 		/*if(CWCompareEthernetAddress(probeRequest.SSID, WTPBSSInfoPtr->interfaceInfo->SSID) != 0)
 		{
 			//CWLog("[80211] SSID is not the same of this interface. Aborted");

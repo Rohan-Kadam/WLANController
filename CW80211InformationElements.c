@@ -438,9 +438,16 @@ CWBool CW80211ParseFrameIESSID(char * frameReceived, int * offsetFrameReceived, 
 	short int len = frameReceived[1];
 	if(len == 0)
 	{
-		CWLog("UE Detected, No SSID");	
-		//UE_SSID
+		CWLog("UE Detected, No SSID");
+		//PROBE ORIGIN problem unresolved - Rohan 13/02/2019
+		//Controller unable to trace which AP intercepted a particular probe frame
+		//May be solution: 
+		//		Add vendor specific field in 802.11 Probe Request Mgmt Frame	
+		//		OR
+		//		Send it to AC in "listElement->bindingValues = NULL" of WTP-AC list mechanism
+		//		At AC how to access that bindingValue?? ACRunState has only frame???
 		char * ue_ssid = "UE";
+
 		short int ue_ssid_len = strlen(ue_ssid);
 		//len = ue_ssid_len;
 		

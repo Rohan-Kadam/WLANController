@@ -558,7 +558,7 @@ CWBool ACEnterRun(int WTPIndex, CWProtocolMessage *msgPtr, CWBool dataFlag) {
 						return CWErrorRaise(CW_ERROR_WRONG_ARG, NULL);
 					CWLog("Probe Request received from AP SSID-> %s AP MAC-> %02x:%02x: UE MAC-> %02x:%02x:",ProbeRequest.SSID,ProbeRequest.DA[0],ProbeRequest.DA[1],ProbeRequest.SA[0],ProbeRequest.SA[1]);
 					CWLog("***************Updating XML Buffer******************");
-					//buffer_main(&assRequest.BSSID[0],&assRequest.DA[0],&assRequest.SA[0]);
+					buffer_main(&ProbeRequest.SSID[0],"Probe Request",&ProbeRequest.SA[0]);
 									
 					//----------------------------------------------------------
 
@@ -653,7 +653,7 @@ CWBool ACEnterRun(int WTPIndex, CWProtocolMessage *msgPtr, CWBool dataFlag) {
 					if(subtype == WLAN_FC_STYPE_ASSOC_REQ)
 					{
 						CWLog("***************Updating XML Buffer******************");
-						buffer_main(&assRequest.BSSID[0],&assRequest.DA[0],&assRequest.SA[0]);
+						buffer_main(&assRequest.BSSID[0],"Association",&assRequest.SA[0]);
 					}
 					if(assRequest.BSSID == NULL || assRequest.DA == NULL || assRequest.SA == NULL)
 						return CW_FALSE;
