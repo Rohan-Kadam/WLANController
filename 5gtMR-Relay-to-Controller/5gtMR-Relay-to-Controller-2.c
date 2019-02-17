@@ -155,7 +155,8 @@ static void parse_buffer(xmlDocPtr doc, xmlNodePtr cur)
                         	key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
                         	printf(" Message at %s is %s\n",head,key);
                         	//copy to buffer here, which will be sent over UDP to Controller
-                        	xmlFree(key);
+                        	sprintf(buffer,"%s",key);
+							xmlFree(key);
 
 							Update_Buffer_Block = FALSE;
 						}
@@ -212,7 +213,7 @@ void buffer_main()
     xmlDocPtr doc;
     xmlNodePtr cur;
         
-	//printf("In xml code\n");
+	printf("In xml code\n");
 	
 	doc = xmlParseFile(DOCNAME);
 	if (doc == NULL) 
@@ -339,7 +340,7 @@ int main(int argc,char *argv[])
     	perror("UDP Socket Initialization Failed\n");
       	exit(2);
     }
-
+	printf("Start\n");
 	//FOREVER LOOP STARTS HERE
     while (1) 
 	{
@@ -383,6 +384,7 @@ int main(int argc,char *argv[])
 			//Name of file under observation
 			if (ev->len)
             {
+				printf("breakpoint\n");
 		      	// printf("file %s %s\n", ev->name,
              	//         (ev->mask & IN_CREATE) ? "created" :
               	//         (ev->mask & IN_DELETE) ? "deleted" :
