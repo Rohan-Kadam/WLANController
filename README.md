@@ -36,13 +36,30 @@ In order to run the WTP software, you must have a wireless card with AP mode ava
 
 ## Installing
 
-Within the openCAPWAP folder, type:
+Within the capwap folder, type:
 ```
+cd 5GTB-Wifi-Management-master/capwap
 make clean
 make
 ```
 
-For further info, please refer to the INSTALL file
+For further info, please refer to the INSTALL file in capwap folder.
+This file explains how to build and run WTP and AC executables.
+Quick commands to run the program after successful compilation:
+```
+cd 5GTB-Wifi-Management-master
+sudo ./clean.sh
+cd capwap
+sudo ./AC .
+sudo ./WTP .
+```
+
+The WTP and AC logs are created at "/var/log". 
+You can open up the logs in separate terminal windows using:
+```
+tail -f /var/log/ac.log.txt
+tail -f /var/log/wtp1.txt
+```
 
 ## Notes
 
