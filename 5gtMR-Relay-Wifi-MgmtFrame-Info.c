@@ -22,7 +22,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define DOCNAME "buffer.xml"
+#define DOCNAME "../buffer.xml"
 
 unsigned char bm_bssid[50];
 unsigned char bm_dest_addr[50];
