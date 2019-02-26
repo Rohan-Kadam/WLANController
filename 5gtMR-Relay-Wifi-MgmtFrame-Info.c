@@ -4,7 +4,9 @@
  * @brief Reads and modifies child nodes content
  * @note gcc -Wall -I/usr/include/libxml2 -o 5gtMR-Relay-Wifi-MgmtFrame-Info 5gtMR-Relay-Wifi-MgmtFrame-Info.c -lxml2
  */
-/*#include <stdio.h>
+
+/*
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
