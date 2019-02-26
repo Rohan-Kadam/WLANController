@@ -43,9 +43,12 @@ make clean
 make
 ```
 
+## Running
+ 
 For further info, please refer to the INSTALL file in capwap folder.
 This file explains how to build and run WTP and AC executables.
-Quick commands to run the program after successful compilation:
+
+Quick commands to run the program after successful compilation (Recommended to follow INSTALL file):
 ```
 cd 5GTB-Wifi-Management-master
 sudo ./clean.sh
