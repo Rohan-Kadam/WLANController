@@ -7,9 +7,9 @@
 
 ===================================================================================
 
-Base Project link: https://github.com/vollero/openCAPWAP
+## About openCAPWAP v2.0 project:
 
-About openCAPWAP v2.0 project:
+Base Project link: https://github.com/vollero/openCAPWAP
 
 Open source implementation of the CAPWAP protocol according to RFC 4515 and RFC 4516.
 It supports both SplitMAC and LocalMAC operational architectures.
@@ -70,4 +70,14 @@ OpenCAPWAP doesn't provide any type of DHCP service or IP assignation to associa
 If you are using the SPLIT MAC mode, you must create a bridge between AC's network interface (ethernet or wireless) and the AC's tap interface.
 If you are using the LOCAL MAC mode, you must create a bridge between the WTP's AP interface and the ethernet interface.
 The DHCP server must be reachable from WTP's ethernet (LOCAL MAC) or AC's ethernet (SPLIT MAC).
+
+
+## About hostapd
+
+
+
+
+
+
+
 
