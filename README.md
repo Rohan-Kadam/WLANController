@@ -1,13 +1,13 @@
 # 5GTB-Wifi-Management
 ===================================================================================
 
--- Extending the openCAPWAP v2.0 project.                                    
+-- Extending the openCAPWAP v2.0 and hostapd project
 
 -- Modifications are intended to make it more suitable for SDN paradigm.      
 
 ===================================================================================
 
-## About openCAPWAP v2.0 project:
+## A] About openCAPWAP v2.0 project:
 
 Base Project link: https://github.com/vollero/openCAPWAP
 
@@ -72,7 +72,9 @@ If you are using the LOCAL MAC mode, you must create a bridge between the WTP's 
 The DHCP server must be reachable from WTP's ethernet (LOCAL MAC) or AC's ethernet (SPLIT MAC).
 
 
-## About hostapd
+## B] About hostapd project:
+
+Base project link: https://w1.fi/hostapd/
 
 
 
