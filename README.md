@@ -1,4 +1,4 @@
-# 5GTB-Wifi-Management
+# WLANController
 ===================================================================================
 
 -- Extending the openCAPWAP v2.0 and hostapd project
