@@ -1,0 +1,143 @@
+
+nf
+ 2075  mv netoconf netconf
+ 2076  clear
+ 2077  ls
+ 2078  cd netconf/
+ 2079  sl
+ 2080  clear
+ 2081  ls
+ 2082  git clone https://github.com/CESNET/libnetconf.git
+ 2083  sudo apt-get install libtool-bin
+ 2084  sudo apt-get install libxml2-dev
+ 2085  sudo apt-get install libxslt1-dev
+ 2086  sudo apt-get install libcurl4-openssl-dev
+ 2087  sudo apt-get install xsltproc
+ 2088  sudo apt-get install python-setuptools 
+ 2089  sudo apt-get install cmake 
+ 2090  sudo apt-get install zlib1g-dev
+ 2091  sudo apt-get install libssl-dev
+ 2092  sudo apt-get install pkg-config
+ 2093  sudo apt-get install lib-readline-dev
+ 2094  sudo apt-get install libreadline-dev
+ 2095  git clone https://github.com/mbj4668/pyang.git
+ 2096  cd pyang/
+ 2097  ls
+ 2098  sudo python setup.py install
+ 2099  cd ..
+ 2100  ls
+ 2101  git clone https://git.libssh.org/projects/libssh.git libssh
+ 2102  cd libssh/
+ 2103  ls
+ 2104  mkdir build
+ 2105  cd build/
+ 2106  ls
+ 2107  cmake ..
+ 2108  make
+ 2109  sudo make install
+ 2110  cd ..
+ 2111  ls
+ 2112  cd libnetconf/
+ 2113  ls
+ 2114  ./configure 
+ 2115  make
+ 2116  sudo make install
+ 2117  export CPPFLAGS='-I/usr/local/include'
+ 2118  export LDFLAGS='-L/usr/local/lib'
+ 2119  ./configure 
+ 2120  make
+ 2121  history
+ 2122  ./configure 
+ 2123  make
+ 2124  ls
+ 2125  vim Makefile
+ 2126  ls
+ 2127  autoreconf
+ 2128  sudo apt install autoconf
+ 2129  ls
+ 2130  autoreconf 
+ 2131  ./configure 
+ 2132  make
+ 2133  autoreconf --force --install
+ 2134  ./configure 
+ 2135  make
+ 2136  sudo make install
+ 2137  cd ..
+ 2138  ls
+ 2139  git clone https://github.com/CESNET/netopeer.git
+ 2140  sudo apt-get install python-libxml2
+ 2141  cd netopeer/server/
+ 2142  ./configure 
+ 2143  sudo apt-get install libaugeas-dev  
+ 2144  cd netopeer/transAPI/cfgsystem
+ 2145  cd ../transAPI/cfgsystem/
+ 2146  ls
+ 2147  ./configure
+ 2148  cd model/
+ 2149  ls
+ 2150  vim ietf-inet-types.yang
+ 2151  cd ..
+ 2152  ./configure
+ 2153  make
+ 2154  sudo make install
+ 2155  sudo apt-get install openssh-server 
+ 2156  sudo /usr/local/bin/netopeer-server -d
+ 2157  ls
+ 2158  cd ../..
+ 2159  ls
+ 2160  cd server/
+ 2161  ls
+ 2162  make
+ 2163  ls
+ 2164  ./netopeer-server 
+ 2165  sudo ./netopeer-server 
+ 2166  sudo ./netopeer-server -v 5
+ 2167  clear
+ 2168  ls
+ 2169  cd ..
+ 2170  ls
+ 2171  cd transAPI/
+ 2172  ls
+ 2173  cd cfgsystem/
+ 2174  ls
+ 2175  history
+ 2176  cd model/
+ 2177  ls
+ 2178  cp ietf-inet-types.yang ../../../server/config
+ 2179  cd ../../../
+ 2180  ls
+ 2181  cd server/
+ 2182  ls
+ 2183  make clena
+ 2184  make clean
+ 2185  make
+ 2186  ls
+ 2187  sudo ./netopeer-server -v 5
+ 2188  history
+
+
+
+
+
+
+
+
+
+
+ 2036  vim README 
+ 2037  ./configure && make && make install
+ 2038  sudo ./configure && make && make install
+ 2039  ls
+ 2040  make clean
+ 2041  ls
+ 2042  ./configure 
+ 2043  make
+ 2044  sudo make install
+ 2045  sudo ./netopeer-server -v 5
+
+
+
+
+
+sudo netopeer-configurator
+Write permit
