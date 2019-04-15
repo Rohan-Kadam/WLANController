@@ -1,0 +1,129 @@
+---------------------------------
+| STEP 1: Stop ongoing services |
+---------------------------------
+sudo systemctl stop hostapd
+sudo systemctl stop dnsmasq
+
+---------------------------------------------------------
+| STEP 2:Configure a static IP for the wlp3s0 interface |
+---------------------------------------------------------
+sudo nano /etc/dhcpcd.conf			
+Add>> 	interface br0
+	static ip_address=192.168.0.10/24		X We shall use dynamic IP.(Ensure AP has dhclient)
+	denyinterfaces enp0s25
+	denyinterfaces wlp3s0
+
+-----------------------------------------------
+| STEP 3: Configure the DHCP server (dnsmasq) |
+-----------------------------------------------
+sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig	X Run DHCP server(dnsmasq) on VBS 
+sudo nano /etc/dnsmasq.conf				X
+Add>> 	interface=wlp3s0
+		dhcp-range=192.168.0.11,192.168.0.30,255.255.255.0,24h
+
+Rohan's Laptop has more example of config files. Test with Alloting pre-decided IP address to specified MAC
+
+<Normal Run>: Connect Ethernet cable to DHCP Laptop, provide ip to Ethernet port in same subnet as dhcp ip pool.
+<Normal Run>: Request IP from br0 using dhclient br0
+
+--------------------------------------------------------------
+| STEP 4: Configure the access point host software (hostapd) |
+--------------------------------------------------------------
+sudo nano /etc/hostapd/hostapd.conf			X Edit hostapd.conf file inside source code folder
+Add>>	interface=wlp3s0
+	bridge=br0
+	hw_mode=g
+	channel=7
+	wmm_enabled=0
+	macaddr_acl=0
+	auth_algs=1
+	ignore_broadcast_ssid=0
+	wpa=2
+	wpa_key_mgmt=WPA-PSK
+	wpa_pairwise=TKIP
+	rsn_pairwise=CCMP
+	ssid=NETWORK
+	wpa_passphrase=PASSWORD
+sudo nano /etc/default/hostapd				X Run hostapd with hostapd.conf from source code folder
+DAEMON_CONF="/etc/hostapd/hostapd.conf"			X sudo ./hostapd ./hostapd.conf
+
+<Normal Run>: sudo ./hostapd ./hostapd.conf
+<Normal Run>: Connect UE
+
+-------------------------------------
+| STEP 5: Set up traffic forwarding |
+-------------------------------------
+sudo nano /etc/sysctl.conf
+Enable>> net.ipv4.ip_forward=1
+
+-----------------------------------
+| STEP 6: Add a new iptables rule |
+-----------------------------------
+sudo iptables -t nat -A POSTROUTING -o enp0s25 -j MASQUERADE
+sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
+sudo iptables-restore < /etc/iptables.ipv4.nat
+
+--------------------------------------
+| STEP 7: Enable internet connection |
+--------------------------------------
+sudo brctl addbr br0
+sudo brctl addif br0 enp0s25
+sudo nano /etc/network/interfaces
+Add>>	auto br0
+	iface br0 inet manual				X Used "iface br0 inet dhcp" for dynamic IP
+	bridge_ports enp0s25 wlp3s0
+
+------------------
+| STEP 8: REBOOT |
+------------------
+sudo reboot
+
+
+ 2000  cd Work/
+ 2001  ls
+ 2002  cd hostapd-2.7/
+ 2003  ls
+ 2004  cd hostapd/
+ 2005  sudo ./hostapd ./hostapd.conf
+ 2006  sudo nmcli radio wifi off
+ 2007  sudo nmcli radio wifi on
+ 2008  sudo nmcli radio wifi off
+ 2009  sudo nmcli radio wifi on
+ 2010  sudo ./hostapd ./hostapd.conf
+
+ 1991  sudo ifconfig wlp3s0 up
+ 1992  sudo rfkill unblock all
+ 1993  sudo ifconfig wlp3s0 up
+ 1994  sudo ./hostapd ./hostapd.conf
+ 1995  ip link
+ 1996  sudo reboot
+ 1997  airmon-ng
+ 1998  sudo airmon-ng
+ 1999  sudo airmon-ng check
+ 2000  sudo airmon-ng check kill
+ 2001  sudo airmon-ng check
+ 2002  sudo airmon-ng
+ 2003  sudo airmon-ng start wlp3s0
+ 2004  brctl show
+ 2005  ifconfig
+ 2006  sudo ifconfig br0 0
+ 2007  sudo dhclient br0
+ 2008  ifconfig br0
+ 2009  sudo tcpdump -nni mon0 ether src AC:0D:1B:E6:BA:BC 
+
+ 2003  cd libpcap-80211-c-master/
+ 2004  ls
+ 2005  cd ../wicap-master/
+ 2006  ls
+ 2007  vim wicap.c 
+ 2008  ls
+ 2009  ./a.out 
+ 2010  sudo ./a.out mon0
+ 2011  ls
+ 2012  sudo ./a.out mon0
+ 2013  vim wicap.c 
+ 2014  ls
+ 2015  gcc wicap.c radiotap.c -lpcap 
+ 2016  ls
+ 2017  sudo ./a.out mon0
+
