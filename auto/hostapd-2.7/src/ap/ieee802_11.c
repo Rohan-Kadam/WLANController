@@ -4141,6 +4141,18 @@ static void handle_assoc_cb(struct hostapd_data *hapd,
 	struct sta_info *sta;
 	int new_assoc = 1;
 
+	//Added by Rohan
+	//15/4/2019
+	//=====================================================
+	
+	//Char Array to store notifcation message
+	char msg_notif[100];
+	
+	char mac_str[100];
+	//File descriptor to notifcation file
+	FILE * fd_notif;
+
+
 	sta = ap_get_sta(hapd, mgmt->da);
 	if (!sta) {
 		wpa_printf(MSG_INFO, "handle_assoc_cb: STA " MACSTR " not found",
@@ -4180,6 +4192,27 @@ static void handle_assoc_cb(struct hostapd_data *hapd,
 	/* Stop previous accounting session, if one is started, and allocate
 	 * new session id for the new session. */
 	accounting_sta_stop(hapd, sta);
+
+	//Added by Rohan
+	//15/4/2019
+	//======================================================
+	//Works
+	//printf("\n\nASSOCIATION REQUEST RECEIVED HOOK !!!!!!!!!!!!\n\n");
+
+	//ASSOCIATION HOOK
+	fd_notif = fopen("/etc/my_cfg_file.txt","ab");
+
+	if(fd_notif == NULL)
+	{
+		printf("fopen failed");
+	}
+
+	sprintf(mac_str,MACSTR,MAC2STR(sta->addr));
+
+	printf("Association Received | MAC: %s",mac_str);
+  	sprintf(msg_notif,"Association Received | MAC: %s",mac_str);
+  	fputs(msg_notif, fd_notif);
+    fclose(fd_notif);
 
 	hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE80211,
 		       HOSTAPD_LEVEL_INFO,

@@ -944,8 +944,11 @@ int hostapd_probe_req_rx(struct hostapd_data *hapd, const u8 *sa, const u8 *da,
 	size_t i;
 	int ret = 0;
 
+	printf("\n\nPROBE REQUEST RECEIVED HOOK !!!!!!!!!!!!\n\n");
+
 	if (sa == NULL || ie == NULL)
 		return -1;
+
 
 	random_add_randomness(sa, ETH_ALEN);
 	for (i = 0; hapd->probereq_cb && i < hapd->num_probereq_cb; i++) {
@@ -1546,7 +1549,20 @@ void wpa_supplicant_event(void *ctx, enum wpa_event_type event,
 			level = MSG_EXCESSIVE;
 		if (WLAN_FC_GET_TYPE(fc) == WLAN_FC_TYPE_MGMT &&
 		    WLAN_FC_GET_STYPE(fc) == WLAN_FC_STYPE_PROBE_REQ)
+		{
+			//Added by Rohan
+			//15/4/2019
+			//=====================================================
+			//Doesn't works, maybe coz Monitor mode was off
+			//Probe can be captured here
+
+			//printf("\n\nProbe Hook 2nd Mac=%d Signal=%d\n\n",*(data->rx_probe_req.sa),
+			//data->rx_probe_req.ssi_signal);
+
+			//PROBE HOOK
+
 			level = MSG_EXCESSIVE;
+		}
 	}
 
 	wpa_dbg(hapd->msg_ctx, level, "Event %s (%d) received",
@@ -1606,6 +1622,11 @@ void wpa_supplicant_event(void *ctx, enum wpa_event_type event,
 		hostapd_action_rx(hapd, &data->rx_mgmt);
 		break;
 	case EVENT_RX_PROBE_REQ:
+
+		//Added by Rohan
+		//15/4/2019
+		//=====================================================
+		//Control never enters here, maybe coz its outside #NEED_AP_MLME
 		if (data->rx_probe_req.sa == NULL ||
 		    data->rx_probe_req.ie == NULL)
 			break;
