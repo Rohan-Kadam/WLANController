@@ -129,7 +129,7 @@ struct ns_pair namespace_mapping[] = {{"test", "http://example.net/test"}, {NULL
 int callback_test_test(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodePtr new_node, struct nc_err **error) {
 
 	if (op & (XMLDIFF_ADD | XMLDIFF_MOD)) {
-
+/*
 		int fd; 
 		char buffer[10]={0};
 
@@ -146,6 +146,7 @@ int callback_test_test(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodeP
 		write(fd, buffer, strlen(buffer)+1); 
 		
 		close(fd); 
+*/
 	}
 
 	return EXIT_SUCCESS;
