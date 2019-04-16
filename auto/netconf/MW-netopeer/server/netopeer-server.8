@@ -1,0 +1,98 @@
+.\" Process this file with
+.\" groff -man -Tascii netopeer-server.8
+.\"
+.TH "netopeer-server" 8 "Fri Jun 6 2014" "Netopeer"
+.SH NAME
+netopeer-server \- NETCONF protocol server
+.SH SYNOPSIS
+.B netopeer-server [\-dhV] [-v
+.IB level ]
+.SH DESCRIPTION
+.B netopeer-server
+is the NETCONF protocol server running as a system daemon. The
+.B netopeer-server
+is based on the libnetconf library. It provides an environment to run transAPI
+modules for configuration a specific device or application according to its
+data model.
+.SH OPTIONS
+.PP
+.B \-d
+.RS
+Run in daemon mode.
+.RE
+.PP
+.B \-h
+.RS
+Show help.
+.RE
+.PP
+.B \-V
+.RS
+Show program version.
+.RE
+.PP
+.B \-v
+.I level
+.RS
+Set the verbosity level. Possible values are from 0 (default) to 3. This
+overrides any
+.B NETOPEER_VERBOSE
+environment variable.
+.RE
+.SH ENVIRONMENT
+.IP NETOPEER_VERBOSE
+Set the verbosity level. Possible values are from 0 (default) to 3. Overridden
+by the
+.B \-v
+option.
+.SH FILES
+.PP
+.I /etc/netopeer/modules.conf.d/
+.RS
+Directory where the modules configuration files are stored. Note, that they
+usually refers to various files in other locations.
+.RE
+.PP
+.I /etc/netopeer/cfgnetopeer/*
+.RS
+Datastores, data models and validators for the
+.B netopeer-server
+internal modules.
+.RE
+.SS libnetconf files
+.I /var/lib/libnetconf/datastore-acm.xml
+.RS
+Datastore file for the internal NETCONF Access Control module.
+.RE
+.PP
+.I /dev/shm/sem.NCDS_FLOCK_*
+.RS
+Datastores locks used internally by the \fBlibnetconf\fR library.
+.RE
+.SH NETOPEER MODULES
+TBD
+.SH TROUBLESHOOTING
+.SS Datastores dead lock
+.PP
+When the server crashes or is terminated with SIGKILL, it may happen that the
+internal datastore locks stay locked. In such a case, the next time the
+.B netopeer-server
+(or any other libnetconf based application) tries to access the configuration
+datastores, it freezes. To solve this problem, release the locks manually
+removing the
+.I /dev/shm/sem.NCDS_FLOCK_*
+files.
+.SH "SEE ALSO"
+.BR netopeer-cli(1) ,
+.BR netopeer-configurator(1) ,
+.BR netopeer-manager(1) ,
+.SS Homepage
+https://github.com/CESNET/netopeer
+.SH REPORTING BUGS
+Report bugs or any issues to the issue tracker at <https://github.com/CESNET/netopeer/issues>.
+.SH AUTHORS
+Radek Krejci <rkrejci@cesnet.cz>
+.SH COPYRIGHT
+Copyright \(co 2015 CESNET, z.s.p.o.
+
+

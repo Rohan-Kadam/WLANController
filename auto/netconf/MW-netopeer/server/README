@@ -1,0 +1,163 @@
+Introduction
+============
+
+The Netopeer NETCONF server follows the integrated architecture described at
+[https://rawgit.com/CESNET/libnetconf/master/doc/doxygen/html/da/db3/server.html].
+The source codes of this application can be found in the project Git repository
+inside the `/server/` directory. From here, this server is referred as the
+_Netopeer server_.
+
+The Netopeer server is the main part of the Netopeer project. It uses
+libnetconf [1] for handling NETCONF messages and applying operations. Running in
+background as a system daemon, it allows centralized access to managed devices.
+It allows multiple access from clients using the standard SSH transport protocol
+or TLS (when compiled with --enable-tls option).
+
+Netopeer server utilizes libnetconf transAPI [2] modules to control devices (from
+here, referred as the _Netopeer modules_). The default module, called Netopeer,
+is responsible for managing other Netopeer modules specified in the Netopeer
+configuration data (more described below).
+
+To correctly understand how to modify a configuration data in a NETCONF
+datastore, user should be familiar with the NETCONF protocol [3] and YANG
+language [4]. To communicate with the server and operate with the configuration
+data, the Netopeer project includes the netopeer-cli(1) program.
+
+[1] https://github.com/CESNET/libnetconf/
+[2] https://rawgit.com/CESNET/libnetconf/master/doc/doxygen/html/d9/d25/transapi.html
+[3] http://tools.ietf.org/html/rfc6241
+[4] http://tools.ietf.org/html/rfc6020
+
+
+Requirements
+============
+
+Before compiling the source code, make sure that your system provides the
+following libraries or applications. Some of them are optional or can be
+avoided in cost of missing of some feature - see the notes for the specific
+item. All requirements are checked by the configure script.
+
+- compiler (gcc, clang,...) and standard headers
+- pkg-config
+- libpthreads
+- libxml2 (including headers from the devel package)
+- libnetconf (including headers from the devel package)
+- libssh >= 0.6.4 (including headers)
+ - can be skipped if using --disable-ssh
+- pyang >= 1.5.0
+- python 2.6 or higher with the following modules:
+ - os, copy, string, re, argparse, subprocess, inspect, curses, xml, libxml2
+ - only with TLS enabled: M2Crypto
+
+- only with TLS enabled by using the --enable-tls option
+ - OpenSSL (libssl, libcrypto, including headers from the devel package)
+
+- roff2html
+ - optional, used for building HTML version of man pages (make doc)
+- rpmbuild
+ - optional, used for building RPM package (make rpm).
+
+
+Instalation
+===========
+
+Notorious sequence
+
+ ./configure && make && make install
+
+will configure, build project and install the following binaries:
+ netopeer-server(8)       - the Netopeer server
+ netopeer-manager(1)      - tool used to manage the Netopeer modules
+ netopeer-configurator(1) - tool used for the Netopeer server first run
+                            configuration (mainly focus on NACM section)
+
+Usage
+=====
+
+Managing the Netopeer modules
+-----------------------------
+
+The Netopeer server needs a configuration XML file for each module with path to
+the .so file, paths to data models and the datastore. The data models are loaded
+in their order in the configuration to account for any import/augment situation.
+To manage the Netopeer modules, there is the netopeer-manager(1) tool. For more
+information about using this tool, see the man page:
+
+ man netopeer-manager
+
+First run configuration
+-----------------------
+
+Before the starting netopeer-server(8), we recommend to configure it using the
+netopeer-configurator(1) tool. It takes information from the compilation process
+and allows you to change (or at least to show) various netopeer-server(8)
+settings.
+
+The following subsections describes what you can change using
+netopeer-configurator(1).
+
+Netopeer
+~~~~~~~~
+
+This section shows where the Netopeer binaries were installed. Furthermore, it
+allows user to disable/enable the Netopeer modules added by netopeer-manager(1).
+
+NACM
+~~~~
+
+This section covers NETCONF Access Control Module configuration. By default NACM
+avoids any write to the configuration data. To change this, the user can set here
+the default write action or specify the user(s) with unlimited access. There are
+more configuration switches including a possibility to completely turn off the
+NACM.
+
+
+Starting the server
+-------------------
+
+netopeer-server(8) is started manually by:
+
+# netopeer-server -d
+
+The -d option makes the server to start in a daemon mode. You can also set
+logging verbosity by specifying parameter for the -v option from 0 to 3 (errors,
+warnings, verbose, debug).
+
+When the Netopeer server starts, it automatically initiate the Netopeer build-in
+module. The module loads its startup configuration and manages all other modules
+added by the netopeer-manager(1) tool. When the module is added, it is enabled
+by default. To disable starting a specific module, netopeer-configurator(1) can
+be used or it can be done directly via NETCONF modifying the Netopeer's
+configuration data.
+
+Example
+~~~~~~~
+
+Disable 'my_magic_module':
+
+<rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="1">
+  <edit-config>
+    <target>
+      <running/>
+    </target>
+    <config xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0">
+      <netopeer xmlns="urn:cesnet:tmc:netopeer:1.0">
+        <modules>
+          <module>
+            <module-name>my-magic-module</module-name>
+            <module-allowed xc:operation="merge">false</module-allowed>
+          </module>
+        </modules>
+      </netopeer>
+    </config>
+  </edit-config>
+</rpc>
+
+
+TLS transport
+-------------
+
+If compiled with --enable-tls configure option, the server is ready to accept
+connections from clients that present themselves with the client certificate in
+"server/certs". For more information read the specific Wiki section on
+the Netopeer project homepage.

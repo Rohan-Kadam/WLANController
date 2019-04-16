@@ -1,0 +1,27 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
+import string
+
+# all potentially useful paths
+# ./configure creates config.py that is used in runtime
+
+paths = {
+		'prefix' : '@prefix@',\
+		'exec_prefix' : '@exec_prefix@',\
+		'datarootdir' : '@datarootdir@',\
+		'datadir' : '@datadir@',\
+		'bindir' : '@bindir@',\
+		'includedir' : '@includedir@',\
+		'libdir' : '@libdir@',\
+		'mandir' : '@mandir@',\
+		'sysconfdir': '@sysconfdir@',\
+		'cfgdir': '@sysconfdir@/netopeer',\
+		'modulesdir':'@MODULESDIR@',\
+	}
+
+options = {
+		'user' : 'root',\
+		'ssh' : '@SSH@',\
+		'tls' : '@TLS@',\
+	}
