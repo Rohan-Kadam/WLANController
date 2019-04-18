@@ -51,6 +51,9 @@
 #include "readinput.h"
 #include "configuration.h"
 
+#include <fcntl.h>
+#include <errno.h>
+
 static const char rcsid[] __attribute__((used)) ="$Id: "__FILE__": "RCSID" $";
 
 #define PROMPT "netconf> "
@@ -128,12 +131,18 @@ void signal_handler(int sig) {
 	}
 }
 
-int main(int UNUSED(argc), char** UNUSED(argv)) {
+int main(int argc, char** argv) {
 	struct sigaction action;
 	sigset_t block_mask;
 	HIST_ENTRY* hent;
 	char* cmd, *cmdline, *cmdstart;
 	int i, j;
+
+	//char buf[10];
+	//int c2s, s2c;
+	char buffer[100];
+	int fd_downfifo, fd_upfifo;
+	char *msg = "Demo Message from neto-cli";
 
 	/* signal handling */
 	sigfillset(&block_mask);
@@ -155,6 +164,14 @@ int main(int UNUSED(argc), char** UNUSED(argv)) {
 
 	load_config();
 
+	printf("argv = %s %s\n",argv[1],argv[2]);
+	
+
+	fd_downfifo = open(argv[1], O_RDONLY);
+	fd_upfifo = open(argv[2], O_WRONLY);
+	//s2c= open(argv[1], O_RDONLY | O_NONBLOCK);
+    //c2s= open(argv[2], O_WRONLY | O_NONBLOCK);
+	
 	while (!done) {
 		/* get the command from user */
 		cmdline = readline(PROMPT);
@@ -235,8 +252,17 @@ int main(int UNUSED(argc), char** UNUSED(argv)) {
 
 		//This function is used to call a pre-defined static function from commands.c
 		MW_sendtoSBI();
-
+		
+		//read(s2c, &buf, sizeof(char)*10);
+		
+		read(fd_downfifo, buffer, sizeof(buffer));
+		printf("%s \n", buffer);
+		write(fd_upfifo, msg, strlen(msg));
+        
+		while(1);
+		
 		break;
+
 	}
 
 	store_config();
