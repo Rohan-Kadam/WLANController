@@ -26,67 +26,76 @@
 #include <string.h>
 #include <errno.h>
 
-int main(void){
+int main(int argc, char** argv){
     
-    int fd, fd_downfifo, fd_upfifo, ret, flag=0;
-    char *pathname_downfifo = "/tmp/downfifo";
-    char *pathname_upfifo = "/tmp/upfifo";
+    int fd_downfifo, fd_upfifo, ret, ap_num;
+    volatile int itr;
+    char pathname_downfifo[50];
+    char pathname_upfifo[50];
     pid_t childPID;
     char *msg = "Demo Message from Sec-Ctrller";
+    char execl_str[100];
     char buffer[100];
 
-    //Create Downlink FIFO
-    if((mkfifo(pathname_downfifo, S_IRWXU | S_IRWXG))<0){
-        printf("Could not create named pipe %s.\n", pathname_downfifo);
-        printf("%s.\n", strerror(errno));
-        exit(EXIT_FAILURE);
-    }
+    ap_num = atoi(argv[1]);
+    printf("Number of Access Points to control = %d\n",ap_num);
+    
 
-    //Create Uplink FIFO
-    if((mkfifo(pathname_upfifo, S_IRWXU | S_IRWXG))<0){
-        printf("Could not create named pipe %s.\n", pathname_upfifo);
-        printf("%s.\n", strerror(errno));
-        exit(EXIT_FAILURE);
-    }
+    for(itr = ap_num ; itr > 0 ; --itr)
+    {
+        //Create Downlink FIFO
+        sprintf(pathname_downfifo,"/tmp/downfifo%d",itr);
 
-    if((childPID = fork())<0){
-        printf("Error forking process in %u.\n", getpid());
-        exit(EXIT_FAILURE);
-    }
+        if((mkfifo(pathname_downfifo, S_IRWXU | S_IRWXG))<0){
+            printf("Could not create named pipe %s.\n", pathname_downfifo);
+            printf("%s.\n", strerror(errno));
+            exit(EXIT_FAILURE);
+        }
 
-    //in the child process --------------------------
-    if(!childPID){
+        //Create Uplink FIFO
+        sprintf(pathname_upfifo,"/tmp/upfifo%d",itr);
+
+        if((mkfifo(pathname_upfifo, S_IRWXU | S_IRWXG))<0){
+            printf("Could not create named pipe %s.\n", pathname_upfifo);
+            printf("%s.\n", strerror(errno));
+            exit(EXIT_FAILURE);
+        }
+    
+
+        if((childPID = fork())<0){
+            printf("Error forking process in %u.\n", getpid());
+            exit(EXIT_FAILURE);
+        }
+
+    
+    
+        //in the child process --------------------------
+        if(!childPID){
 
         char buffer[256];
         printf("In the child process %u.\n", getpid());
-        
-        //Execl here
-        ret = execl("/usr/bin/gnome-terminal", "gnome-terminal","-e","/usr/local/bin/netopeer-cli /tmp/downfifo /tmp/upfifo",
+
+        //Assemble execl string here
+        sprintf(execl_str,"/usr/local/bin/netopeer-cli /tmp/downfifo%d /tmp/upfifo%d",itr,itr);
+        ret = execl("/usr/bin/gnome-terminal", "gnome-terminal","-e",execl_str,
                       NULL);
         if(ret<0) 
         { 
         	perror("error in execl1"); exit(2); 
         }
-        /*
-        if((fd = open(pathname, O_RDONLY | O_NONBLOCK))<0){
-            printf("Error opening FIFO in %u.\n", getpid());
-            exit(EXIT_FAILURE);
-        } else {
-            printf("FIFO opened in %u.\n", getpid());
-            read(fd, buffer, sizeof(buffer));
-            printf("READ In process %u, read: %s.\n", getpid(), buffer);
-        }
-		printf("Exiting process %u.\n", getpid());
-        */
         exit(0);
 
+        }
     }
-
     //in the parent process ----------------------------
     if(childPID){
         char buffer[256];
         
         printf("In the parent process %u.\n", getpid());
+        
+        printf("%s",pathname_downfifo);
+
+        printf("\n\n================== Write 1 ==================\n\n");
         if((fd_downfifo = open(pathname_downfifo, O_WRONLY))<0)
         {
             printf("Error opening DOWN FIFO in %u.\n", getpid());
@@ -98,6 +107,9 @@ int main(void){
             write(fd_downfifo, msg, strlen(msg));
         }
         
+        printf("%s",pathname_upfifo);
+
+        printf("\n\n================== Read 1 ==================\n\n");
         if((fd_upfifo = open(pathname_upfifo, O_RDONLY))<0){
             printf("Error opening UP FIFO in %u.\n", getpid());
             exit(EXIT_FAILURE);
@@ -106,6 +118,37 @@ int main(void){
             read(fd_upfifo, buffer, sizeof(buffer));
             printf("READ In process %u, read: %s.\n", getpid(), buffer);
         }
+
+        itr = strlen(pathname_downfifo);
+        pathname_downfifo[itr -1] = '2';
+        printf("%s",pathname_downfifo);
+        
+        printf("\n\n================== Write 2 ==================\n\n");
+        if((fd_downfifo = open(pathname_downfifo, O_WRONLY))<0)
+        {
+            printf("Error opening DOWN FIFO in %u.\n", getpid());
+            exit(EXIT_FAILURE);
+        } 
+        else 
+        {
+            printf("DOWN FIFO opened in %u.\n", getpid());
+            write(fd_downfifo, msg, strlen(msg));
+        }
+
+        itr = strlen(pathname_upfifo);
+        pathname_upfifo[itr -1] = '2';
+        printf("%s",pathname_upfifo);
+
+        printf("\n\n================== Read 2 ==================\n\n");        
+        if((fd_upfifo = open(pathname_upfifo, O_RDONLY))<0){
+            printf("Error opening UP FIFO in %u.\n", getpid());
+            exit(EXIT_FAILURE);
+        } else {
+            printf("UP FIFO opened in %u.\n", getpid());
+            read(fd_upfifo, buffer, sizeof(buffer));
+            printf("READ In process %u, read: %s.\n", getpid(), buffer);
+        }
+        
 		printf("Exiting process %u.\n", getpid());
         
 
