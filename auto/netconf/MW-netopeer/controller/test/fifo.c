@@ -26,8 +26,9 @@ int main(void){
     //in the child process --------------------------
     if(!childPID){
         char *msg = "Do you have stairs in your house?";
+        int flags;
         printf("In the child process %u.\n", getpid());
-        if((fd = open(pathname, O_WRONLY))<0){
+        if((fd = open(pathname, O_WRONLY, O_NDELAY | O_NONBLOCK))<0){
             printf("Error opening FIFO in %u.\n", getpid());
             exit(EXIT_FAILURE);
         } else {
@@ -37,8 +38,10 @@ int main(void){
 	printf("FD = %d\n",fd);
         printf("Exiting process %u.\n slen = %d\n ", getpid(), strlen(msg));
     }
+    
     //in the parent process
     if(childPID){
+        
         char buffer[256];
         printf("In the parent process %u.\n", getpid());
         if((fd = open(pathname, O_RDONLY))<0){
@@ -46,18 +49,21 @@ int main(void){
             exit(EXIT_FAILURE);
         } else {
             printf("FIFO opened in %u.\n", getpid());
+        
+            sleep(10);   
+	    
             read(fd, buffer, sizeof(buffer));
             printf("READ In process %u, read: %s.\n", getpid(), buffer);
         }
 	
-	while(1);
-
+	
         if((unlink(pathname))<0){
             printf("Error erasing %s.\n", pathname);
         } else {
             printf("FIFO '%s' erased.\n", pathname);
         }
         printf("Exiting process %u.\n rlen = %d\n", getpid(), strlen(buffer));
+        
     }
     
     return 0;
