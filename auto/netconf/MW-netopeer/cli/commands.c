@@ -4107,8 +4107,8 @@ void MW_sendtoSBI(void)
 {
 	
 	char config[200];
-	int ue_count = 1;
-	int ap_id = 1;
+	int ue_count = 2;
+	int ap_id = 2;
 	sprintf(config,"<test xmlns=\"http://example.net/test\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></test>\n",
 						ap_id,ue_count);
 	

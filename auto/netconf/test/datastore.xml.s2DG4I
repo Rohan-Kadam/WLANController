@@ -2,8 +2,8 @@
 <datastores xmlns="urn:cesnet:tmc:datastores:file">
   <running lock="">
     <test xmlns="http://example.net/test">
-      <ap_id>1</ap_id>
-      <connection_limit>1</connection_limit>
+      <ap_id>2</ap_id>
+      <connection_limit>2</connection_limit>
     </test>
   </running>
   <startup lock=""/>

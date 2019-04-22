@@ -167,8 +167,8 @@ int main(int argc, char** argv) {
 	printf("argv = %s %s\n",argv[1],argv[2]);
 	
 
-	fd_downfifo = open(argv[1], O_RDONLY);
-	fd_upfifo = open(argv[2], O_WRONLY);
+	fd_downfifo = open(argv[1], O_RDONLY, O_NONBLOCK);
+	fd_upfifo = open(argv[2], O_WRONLY , O_NONBLOCK);
 	//s2c= open(argv[1], O_RDONLY | O_NONBLOCK);
     //c2s= open(argv[2], O_WRONLY | O_NONBLOCK);
 	
@@ -257,9 +257,9 @@ int main(int argc, char** argv) {
 		
 		read(fd_downfifo, buffer, sizeof(buffer));
 		printf("%s \n", buffer);
-		write(fd_upfifo, msg, strlen(msg));
-        
-		while(1);
+        write(fd_upfifo, msg, strlen(msg));
+		
+		//while(1);
 		
 		break;
 

@@ -129,7 +129,7 @@ struct ns_pair namespace_mapping[] = {{"test", "http://example.net/test"}, {NULL
 int callback_test_test(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodePtr new_node, struct nc_err **error) {
 
 	if (op & (XMLDIFF_ADD | XMLDIFF_MOD)) {
-/*
+
 		int fd; 
 		char buffer[10]={0};
 
@@ -138,15 +138,16 @@ int callback_test_test(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodeP
 		strcat(buffer,new_node->children->next->children->content);
 
 		char * myfifo = "/tmp/myfifo1";
-		mkfifo(myfifo, 0666);
-		fd = open(myfifo, O_WRONLY);
+		mkfifo(myfifo, 0777);
+		fd = open(myfifo, O_WRONLY, O_NONBLOCK);
 
-		make_socket_non_blocking(fd);
-
+		//make_socket_non_blocking(fd);
+		system("uptime");
+		printf("TRANSAPI FIFO BUFFER = %s",buffer);
 		write(fd, buffer, strlen(buffer)+1); 
 		
 		close(fd); 
-*/
+
 	}
 
 	return EXIT_SUCCESS;

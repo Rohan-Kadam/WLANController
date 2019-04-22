@@ -25,10 +25,15 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/epoll.h> // for epoll_create1(), epoll_ctl(), struct epoll_event
+
+#define MAX_EVENTS 5
+#define READ_SIZE 100
+
 
 int main(int argc, char** argv){
     
-    int fd_downfifo, fd_upfifo, ret, ap_num;
+    int fd_downfifo[10], fd_upfifo[10], ret, ap_num;
     volatile int itr;
     char pathname_downfifo[50];
     char pathname_upfifo[50];
@@ -36,6 +41,14 @@ int main(int argc, char** argv){
     char *msg = "Demo Message from Sec-Ctrller";
     char execl_str[100];
     char buffer[100];
+
+    int running = 1, event_count, i;
+    size_t bytes_read;
+    char read_buffer[READ_SIZE + 1];
+    struct epoll_event event, events[MAX_EVENTS];
+    int file_fd, inoti_fd, watch_fd;
+
+    int epoll_fd;
 
     ap_num = atoi(argv[1]);
     printf("Number of Access Points to control = %d\n",ap_num);
@@ -66,8 +79,6 @@ int main(int argc, char** argv){
             printf("Error forking process in %u.\n", getpid());
             exit(EXIT_FAILURE);
         }
-
-    
     
         //in the child process --------------------------
         if(!childPID){
@@ -75,8 +86,9 @@ int main(int argc, char** argv){
         char buffer[256];
         printf("In the child process %u.\n", getpid());
 
-        //Assemble execl string here
+        //Assembling execl string
         sprintf(execl_str,"/usr/local/bin/netopeer-cli /tmp/downfifo%d /tmp/upfifo%d",itr,itr);
+        //block spawning of other child processes
         ret = execl("/usr/bin/gnome-terminal", "gnome-terminal","-e",execl_str,
                       NULL);
         if(ret<0) 
@@ -86,17 +98,34 @@ int main(int argc, char** argv){
         exit(0);
 
         }
+        
+        //in the parent process ----------------------------
+        if(childPID){
+
+            //TODO:
+            //Maintain list of all fifo descriptors and their paths 
+            //in a array of character 
+
+        }
+    
     }
     //in the parent process ----------------------------
     if(childPID){
         char buffer[256];
         
         printf("In the parent process %u.\n", getpid());
-        
+    
+        epoll_fd = epoll_create1(0);    
+        if(epoll_fd == -1)
+        {
+            fprintf(stderr, "Failed to create epoll file descriptor\n");
+            return 1;
+        }
+
         printf("%s",pathname_downfifo);
 
         printf("\n\n================== Write 1 ==================\n\n");
-        if((fd_downfifo = open(pathname_downfifo, O_WRONLY))<0)
+        if((fd_downfifo[0] = open(pathname_downfifo, O_WRONLY , O_NONBLOCK))<0)
         {
             printf("Error opening DOWN FIFO in %u.\n", getpid());
             exit(EXIT_FAILURE);
@@ -104,27 +133,36 @@ int main(int argc, char** argv){
         else 
         {
             printf("DOWN FIFO opened in %u.\n", getpid());
-            write(fd_downfifo, msg, strlen(msg));
+            itr = write(fd_downfifo[0], msg, strlen(msg));
+            printf("Bytes written in pipe 1 = %d, fd-down = %d\n",itr,fd_downfifo[0]);
+            if(itr < 0)
+            {
+                perror("ERROR");
+            }
         }
         
         printf("%s",pathname_upfifo);
 
         printf("\n\n================== Read 1 ==================\n\n");
-        if((fd_upfifo = open(pathname_upfifo, O_RDONLY))<0){
+        if((fd_upfifo[0] = open(pathname_upfifo, O_RDONLY))<0){
             printf("Error opening UP FIFO in %u.\n", getpid());
             exit(EXIT_FAILURE);
-        } else {
+        } 
+        //else 
+        //{
             printf("UP FIFO opened in %u.\n", getpid());
-            read(fd_upfifo, buffer, sizeof(buffer));
-            printf("READ In process %u, read: %s.\n", getpid(), buffer);
-        }
+        //Change FD to array if enabled
+        //    read(fd_upfifo, buffer, sizeof(buffer));
+        //    printf("READ In process %u, read: %s.\n", getpid(), buffer);
+        //}
 
+        //Replacing index of fifo with 2
         itr = strlen(pathname_downfifo);
         pathname_downfifo[itr -1] = '2';
         printf("%s",pathname_downfifo);
         
         printf("\n\n================== Write 2 ==================\n\n");
-        if((fd_downfifo = open(pathname_downfifo, O_WRONLY))<0)
+        if((fd_downfifo[1] = open(pathname_downfifo, O_WRONLY , O_NONBLOCK))<0)
         {
             printf("Error opening DOWN FIFO in %u.\n", getpid());
             exit(EXIT_FAILURE);
@@ -132,28 +170,104 @@ int main(int argc, char** argv){
         else 
         {
             printf("DOWN FIFO opened in %u.\n", getpid());
-            write(fd_downfifo, msg, strlen(msg));
+            itr = write(fd_downfifo[1], msg, strlen(msg));
+            printf("Bytes written in pipe 2 = %d\nfd-down = %d\n",itr,fd_downfifo[1]);
+            if(itr < 0)
+            {
+                perror("ERROR");
+            }
         }
 
+        //Replacing index of fifo with 2
         itr = strlen(pathname_upfifo);
         pathname_upfifo[itr -1] = '2';
         printf("%s",pathname_upfifo);
 
         printf("\n\n================== Read 2 ==================\n\n");        
-        if((fd_upfifo = open(pathname_upfifo, O_RDONLY))<0){
+        if((fd_upfifo[1] = open(pathname_upfifo, O_RDONLY))<0){
             printf("Error opening UP FIFO in %u.\n", getpid());
             exit(EXIT_FAILURE);
-        } else {
+        } 
+        //else 
+        //{
             printf("UP FIFO opened in %u.\n", getpid());
-            read(fd_upfifo, buffer, sizeof(buffer));
-            printf("READ In process %u, read: %s.\n", getpid(), buffer);
-        }
+        //Change FD to array if enabled
+        //    read(fd_upfifo, buffer, sizeof(buffer));
+        //    printf("READ In process %u, read: %s.\n", getpid(), buffer);
+        //}
         
-		printf("Exiting process %u.\n", getpid());
+		//printf("Exiting process %u.\n", getpid());
         
 
-		//select polling here
-		while(1);
+		//TODO: select based polling here
+
+
+        event.events = EPOLLIN | EPOLLET;
+        event.data.fd = fd_upfifo[0];
+ 
+        if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd_upfifo[0], &event))
+        {
+            fprintf(stderr, "Failed to add file descriptor to epoll\n");
+            close(epoll_fd);
+            return 1;
+        }
+
+        event.events = EPOLLIN | EPOLLET;
+        event.data.fd = fd_upfifo[1];
+ 
+        if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd_upfifo[1], &event))
+        {
+            fprintf(stderr, "Failed to add file descriptor to epoll\n");
+            close(epoll_fd);
+            return 1;
+        }
+
+        while(running)
+        {
+            printf("\nPolling for input...\n");
+            event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, 30000);
+            printf("%d ready events\n", event_count);
+            for(i = 0; i < event_count; i++)
+            {
+                printf("Inside epoll for loop,\nfd = %d\nfd-up0 = %d\nfd-up1 = %d\n",events[i].data.fd, fd_upfifo[0], fd_upfifo[1]);
+                if(events[i].data.fd == fd_upfifo[0])
+                {
+                    printf("Reading file descriptor '%d' -- ", events[i].data.fd);
+                    bytes_read = read(events[i].data.fd, read_buffer, READ_SIZE);
+                    printf("%zd bytes read.\n", bytes_read);
+                    read_buffer[bytes_read] = '\0';
+                    printf("READ: '%s'\n", read_buffer);
+                } 
+            
+                if(events[i].data.fd == fd_upfifo[1])
+                {
+                    printf("Reading file descriptor '%d' -- ", events[i].data.fd);
+                    bytes_read = read(events[i].data.fd, read_buffer, READ_SIZE);
+                    printf("%zd bytes read.\n", bytes_read);
+                    read_buffer[bytes_read] = '\0';
+                    printf("READ: '%s'\n", read_buffer);
+                } 
+                
+                //if ((events[i].events & EPOLLERR || events[i].events & EPOLLHUP || !(events[i].events & EPOLLIN)) && events[i].data.fd != fd_upfifo[0]) {
+                //perror("epoll error");
+                //close(events[i].data.fd);
+                //}
+
+                //fflush((void *)&(events[i].data.fd));         
+ 
+                //if(!strncmp(read_buffer, "stop\n", 5))
+                //    running = 0;
+            }
+        }
+ 
+        if(close(epoll_fd))
+        {
+            fprintf(stderr, "Failed to close epoll file descriptor\n");
+            return 1;
+        }
+
+
+        //while(1);
 
         if((unlink(pathname_upfifo))<0){
             printf("Error erasing %s.\n", pathname_upfifo);
