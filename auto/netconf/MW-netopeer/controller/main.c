@@ -46,7 +46,7 @@ int main(int argc, char** argv){
     size_t bytes_read;
     char read_buffer[READ_SIZE + 1];
     struct epoll_event event, events[MAX_EVENTS];
-    int file_fd, inoti_fd, watch_fd;
+    int file_fd, inoti_fd, watch_fd, notif_fd;
 
     int epoll_fd;
 
@@ -237,6 +237,20 @@ int main(int argc, char** argv){
                     printf("%zd bytes read.\n", bytes_read);
                     read_buffer[bytes_read] = '\0';
                     printf("READ: '%s'\n", read_buffer);
+
+                    notif_fd = fopen("/etc/toCTRL.txt","ab");
+
+                    if(notif_fd == NULL)
+                    {
+                        printf("fopen failed");
+                    }
+
+                    //TODO: Map MAC/IP to APID
+                    //TODO: Modify string here (i.e. Add APID Mapping, remove tags,...)    
+                    
+                    //Update Notification to Controller file
+                    fputs(read_buffer, notif_fd);
+                    fclose(notif_fd);
                 } 
             
                 if(events[i].data.fd == fd_upfifo[1])
@@ -246,6 +260,22 @@ int main(int argc, char** argv){
                     printf("%zd bytes read.\n", bytes_read);
                     read_buffer[bytes_read] = '\0';
                     printf("READ: '%s'\n", read_buffer);
+
+                    //Write to notification file here
+                    notif_fd = fopen("/etc/toCTRL.txt","ab");
+
+                    if(notif_fd == NULL)
+                    {
+                        printf("fopen failed");
+                    }
+
+                    //TODO: Map MAC/IP to APID
+                    //TODO: Modify string here (i.e. Add APID Mapping, remove tags,...)    
+                    
+                    //Update Notification to Controller file
+                    fputs(read_buffer, notif_fd);
+                    fclose(notif_fd);
+
                 } 
                 
                 //if ((events[i].events & EPOLLERR || events[i].events & EPOLLHUP || !(events[i].events & EPOLLIN)) && events[i].data.fd != fd_upfifo[0]) {
