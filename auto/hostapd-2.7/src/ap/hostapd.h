@@ -131,10 +131,10 @@ struct hostapd_neighbor_entry {
 
 //Added by Rohan
 //15/4/2019
-//=====================================================	
 //Most useful data structure in hostapd
 //Nothing added here.
-
+//=====================================================	
+//
 /**
  * struct hostapd_data - hostapd per-BSS data structure
  */

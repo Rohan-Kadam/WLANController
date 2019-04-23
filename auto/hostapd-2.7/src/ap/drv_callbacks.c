@@ -1552,14 +1552,12 @@ void wpa_supplicant_event(void *ctx, enum wpa_event_type event,
 		{
 			//Added by Rohan
 			//15/4/2019
+			//PROBE HOOK: Probe can be captured here
+			//SNR Capture doesn't works, maybe coz Monitor mode was off
 			//=====================================================
-			//Doesn't works, maybe coz Monitor mode was off
-			//Probe can be captured here
-
+			//
 			//printf("\n\nProbe Hook 2nd Mac=%d Signal=%d\n\n",*(data->rx_probe_req.sa),
 			//data->rx_probe_req.ssi_signal);
-
-			//PROBE HOOK
 
 			level = MSG_EXCESSIVE;
 		}
@@ -1625,8 +1623,9 @@ void wpa_supplicant_event(void *ctx, enum wpa_event_type event,
 
 		//Added by Rohan
 		//15/4/2019
+		//PROBE HOOK 2: Control never enters here, maybe coz its outside #NEED_AP_MLME
 		//=====================================================
-		//Control never enters here, maybe coz its outside #NEED_AP_MLME
+		//
 		if (data->rx_probe_req.sa == NULL ||
 		    data->rx_probe_req.ie == NULL)
 			break;

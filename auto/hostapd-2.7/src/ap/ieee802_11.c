@@ -4143,7 +4143,8 @@ static void handle_assoc_cb(struct hostapd_data *hapd,
 
 	//Added by Rohan
 	//15/4/2019
-	//=====================================================
+	//Declared Variables, which are used for sending Association Received
+	//=====================================================================
 	
 	//Char Array to store notifcation message
 	char msg_notif[100];
@@ -4195,12 +4196,12 @@ static void handle_assoc_cb(struct hostapd_data *hapd,
 
 	//Added by Rohan
 	//15/4/2019
+	//ASSOCIATION HOOK
 	//======================================================
 	//Works
 	//printf("\n\nASSOCIATION REQUEST RECEIVED HOOK !!!!!!!!!!!!\n\n");
 
-	//ASSOCIATION HOOK
-	fd_notif = fopen("/etc/my_cfg_file.txt","ab");
+	fd_notif = fopen("/etc/toMW.txt","ab");
 
 	if(fd_notif == NULL)
 	{
