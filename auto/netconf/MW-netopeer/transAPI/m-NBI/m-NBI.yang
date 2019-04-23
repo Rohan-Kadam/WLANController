@@ -1,0 +1,33 @@
+module m-NBI {
+
+    namespace "http://multirat.net/m-NBI";
+
+    prefix mn;
+
+    revision "2019-04-23" {
+        description 
+		"Initial version. 
+		 This YANG Model defines the MultiRAT Middlewares interface between Netopeer Server and Netopeer Cli Controller 
+		 And also defines list of configurable parameters";
+    }
+
+	grouping info{
+    		leaf ap_id {
+			type string;
+		}
+    		
+		leaf connection_limit {
+      			type string;
+		} 
+ 	}
+  
+	container update {
+   		uses info;	
+   	}
+
+	notification halted {
+		leaf state {
+			type string;
+		}
+	}
+}

@@ -1,0 +1,2 @@
+test=http://example.net/test
+/test:test

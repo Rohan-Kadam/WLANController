@@ -1,0 +1,2 @@
+m-NBI=http://multirat.net/m-NBI
+/mn:update

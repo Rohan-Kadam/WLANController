@@ -1,0 +1,2 @@
+m-SBI=http://multirat.net/m-SBI
+/ms:update

@@ -1,0 +1,33 @@
+module m-SBI {
+
+    namespace "http://multirat.net/m-SBI";
+
+    prefix ms;
+
+    revision "2019-04-23" {
+        description 
+		"Initial version. 
+		 This YANG Model defines the MultiRAT Middlewares interface's for carrying traffic over m-SBI (i.e. to and fro AP). 
+		 And also defines list of configurable parameters";
+    }
+
+	grouping info{
+    		leaf ap_id {
+			type string;
+		}
+    		
+		leaf connection_limit {
+      			type string;
+		} 
+ 	}
+  
+	container update {
+   		uses info;	
+   	}
+
+	notification halted {
+		leaf state {
+			type string;
+		}
+	}
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:ietf:params:xml:ns:yang:yin:1" xmlns:mn="http://multirat.net/m-NBI" name="m-NBI">
+  <namespace uri="http://multirat.net/m-NBI"/>
+  <prefix value="mn"/>
+  <revision date="2019-04-23">
+    <description>
+      <text>Initial version.
+This YANG Model defines the MultiRAT Middlewares interface between Netopeer Server and Netopeer Cli Controller
+And also defines list of configurable parameters</text>
+    </description>
+  </revision>
+  <grouping name="info">
+    <leaf name="ap_id">
+      <type name="string"/>
+    </leaf>
+    <leaf name="connection_limit">
+      <type name="string"/>
+    </leaf>
+  </grouping>
+  <container name="update">
+    <uses name="info"/>
+  </container>
+  <notification name="halted">
+    <leaf name="state">
+      <type name="string"/>
+    </leaf>
+  </notification>
+</module>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:ietf:params:xml:ns:yang:yin:1" xmlns:test="http://example.net/test" name="test">
+  <namespace uri="http://example.net/test"/>
+  <prefix value="test"/>
+  <revision date="2015-07-28">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <grouping name="info">
+    <leaf name="ap_id">
+      <type name="string"/>
+    </leaf>
+    <leaf name="connection_limit">
+      <type name="string"/>
+    </leaf>
+  </grouping>
+  <container name="test">
+    <uses name="info"/>
+  </container>
+  <notification name="halted">
+    <leaf name="state">
+      <type name="string"/>
+    </leaf>
+  </notification>
+</module>

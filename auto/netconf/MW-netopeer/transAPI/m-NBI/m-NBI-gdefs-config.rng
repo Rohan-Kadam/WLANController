@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grammar xmlns:mn="http://multirat.net/m-NBI" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:nma="urn:ietf:params:xml:ns:netmod:dsdl-annotations:1" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"><define name="m-NBI___info"><interleave><optional><element name="ap_id"><data type="string"/></element></optional><optional><element name="connection_limit"><data type="string"/></element></optional></interleave></define></grammar>

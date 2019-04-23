@@ -1,0 +1,29 @@
+module test {
+
+    namespace "http://example.net/test";
+
+    prefix test;
+
+    revision "2015-07-28" {
+        description "Initial version.";
+    }
+
+ grouping info{
+    leaf ap_id {
+      type string;
+   	}
+    leaf connection_limit {
+      type string;
+	} 
+ }
+  container test {
+   uses info;	
+   }
+
+  notification halted {
+    leaf state {
+      type string;
+    }
+  }
+
+}
