@@ -18,6 +18,7 @@
 #include <sys/un.h>
 #include <sys/stat.h>
 #include <stddef.h>
+#include <fcntl.h>
 
 #ifdef CONFIG_CTRL_IFACE_UDP
 #include <netdb.h>
@@ -3267,6 +3268,7 @@ static int hostapd_ctrl_iface_receive_process(struct hostapd_data *hapd,
 }
 
 
+
 static void hostapd_ctrl_iface_receive(int sock, void *eloop_ctx,
 				       void *sock_ctx)
 {
@@ -3791,6 +3793,10 @@ hostapd_global_ctrl_iface_fst_detach(struct hapd_interfaces *interfaces,
 
 #endif /* CONFIG_FST */
 
+//Added by Rohan
+//15/4/2019
+//Get hapd definition
+//=====================================================	
 
 static struct hostapd_data *
 hostapd_interfaces_get_hapd(struct hapd_interfaces *interfaces,
@@ -3976,6 +3982,11 @@ static int hostapd_global_ctrl_iface_ifname(struct hapd_interfaces *interfaces,
 {
 	struct hostapd_data *hapd;
 
+
+	//Added by Rohan
+	//24/4/2019
+	//Obtain hapd from interfaces
+	//=====================================================	
 	hapd = hostapd_interfaces_get_hapd(interfaces, ifname);
 	if (hapd == NULL) {
 		int res;
@@ -3988,6 +3999,56 @@ static int hostapd_global_ctrl_iface_ifname(struct hapd_interfaces *interfaces,
 
 	return hostapd_ctrl_iface_receive_process(hapd, buf, reply,reply_size,
 						  from, fromlen);
+}
+
+	//Added by Rohan
+//24/4/2019
+//Epoll event handler for netopeer downlink pipe 
+//=====================================================
+#define READ_SIZE 10
+
+static void netopeer_recv(int pipe_fd, void *eloop_ctx, void *pipe_ctx)
+{
+	struct hapd_interfaces *interfaces = eloop_ctx;
+	printf("*********** Inside netopeer_recv handler *********** \n");
+
+	size_t bytes_read;
+	char read_buffer[READ_SIZE + 1];
+	
+
+
+	//Get hapd
+	struct hostapd_data *hapd;
+	size_t i, j;
+
+	for (i = 0; i < interfaces->count; i++) 
+	{
+		struct hostapd_iface *iface = interfaces->iface[i];
+		printf("interface->count = %d\n",interfaces->count);
+
+		for (j = 0; j < iface->num_bss; j++) 
+		{
+			printf("interface->iface->num_bss = %d\n\n",iface->num_bss);
+			hapd = iface->bss[j];
+		}
+	}	
+
+	wpa_msg(hapd->msg_ctx, MSG_INFO, "hapd obtained successfully");
+
+	//Read MW2AP_FIFO
+	bytes_read = read(pipe_fd, read_buffer, READ_SIZE);
+	printf("%zd bytes read.\n", bytes_read);
+	read_buffer[bytes_read] = '\0';
+	printf("Read: %s\n", read_buffer);
+
+
+	wpa_msg(hapd->msg_ctx, MSG_INFO, "Read: %s", read_buffer);
+
+
+	//Decode incoming packet
+	//Update config using hapd structure in interfaces
+
+
 }
 
 
@@ -4063,6 +4124,14 @@ static void hostapd_global_ctrl_iface_receive(int sock, void *eloop_ctx,
 
 		if (pos) {
 			*pos++ = '\0';
+
+
+			//Added by Rohan
+			//24/4/2019
+			//buf + 7 = ifname which is used to get hapd
+			//how to get buf + 7
+			//=====================================================	
+
 			reply_len = hostapd_global_ctrl_iface_ifname(
 				interfaces, buf + 7, pos, reply, reply_size,
 				&from, fromlen);
@@ -4169,6 +4238,46 @@ static char * hostapd_global_ctrl_iface_path(struct hapd_interfaces *interface)
 }
 #endif /* CONFIG_CTRL_IFACE_UDP */
 
+
+//Added by Rohan
+//24/4/2019
+//Register netopeer downlink pipe as an epoll event 
+//=====================================================
+
+int netopeer_init(struct hapd_interfaces *interface)
+{
+	int MW2AP_fd;
+    char *pathname = "/tmp/MW2AP_FIFO";
+    
+    if((mkfifo(pathname, S_IRWXU | S_IRWXG))<0)
+    {
+		wpa_printf(MSG_ERROR, "Could not create named pipe %s Error = %s.\n", pathname, strerror(errno));
+    	goto fail;
+    }
+    
+    if((MW2AP_fd = open(pathname, O_RDWR))<0)
+    {
+   		wpa_printf(MSG_ERROR, "Error opening FIFO Error = %s.\n", strerror(errno));
+   		goto fail;
+    }
+
+    eloop_register_read_sock(MW2AP_fd, netopeer_recv, interface, NULL);
+
+    return 0;
+
+fail:
+	if((unlink(pathname))<0)
+	{
+		wpa_printf(MSG_ERROR, "Error erasing %s.\n", pathname);
+    } 
+    else 
+    {
+		wpa_printf(MSG_ERROR, "FIFO '%s' erased.\n", pathname);
+    }
+    exit(EXIT_FAILURE);
+
+    return -1;
+}
 
 int hostapd_global_ctrl_iface_init(struct hapd_interfaces *interface)
 {

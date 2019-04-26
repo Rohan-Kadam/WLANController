@@ -443,6 +443,10 @@ static int hostapd_global_run(struct hapd_interfaces *ifaces, int daemonize,
 			return -1;
 		}
 	}
+	//Added by Rohan
+	//25/4/2019
+	//TODO: Send AP Connected here
+	//=====================================================	
 
 	eloop_run();
 
@@ -879,6 +883,13 @@ int main(int argc, char *argv[])
 	}
 
 	hostapd_global_ctrl_iface_init(&interfaces);
+
+	//Added by Rohan
+	//24/4/2019
+	//Register netopeer downlink pipe as an epoll event 
+	//=====================================================	
+	netopeer_init(&interfaces);
+
 
 	if (hostapd_global_run(&interfaces, daemonize, pid_file)) {
 		wpa_printf(MSG_ERROR, "Failed to start eloop");
