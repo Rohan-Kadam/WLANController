@@ -3577,6 +3577,10 @@ static void handle_assoc(struct hostapd_data *hapd,
 	}
 #endif /* CONFIG_FILS */
 
+	//Added by Rohan
+	//2/5/2019
+	//ASSOCIATION RESP HOOK
+
 	reply_res = send_assoc_resp(hapd, sta, mgmt->sa, resp, reassoc, pos,
 				    left);
 	os_free(tmp);
