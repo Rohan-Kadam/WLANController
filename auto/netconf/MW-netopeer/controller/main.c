@@ -30,6 +30,18 @@
 #define MAX_EVENTS 5
 #define READ_SIZE 100
 
+int CTRL2MW_fd;
+char *pathname = "/tmp/CTRL2MW_FIFO";
+    
+void netopeer_init(void)
+{
+    //int MW2AP_fd;
+    //char *pathname = "/tmp/MW2AP_FIFO";
+
+    mkfifo(pathname, S_IRWXU | S_IRWXG);
+    CTRL2MW_fd = open(pathname, O_RDONLY, O_NONBLOCK);
+
+}
 
 int main(int argc, char** argv){
     
@@ -53,7 +65,6 @@ int main(int argc, char** argv){
     ap_num = atoi(argv[1]);
     printf("Number of Access Points to control = %d\n",ap_num);
     
-
     for(itr = ap_num ; itr > 0 ; --itr)
     {
         //Create Downlink FIFO
@@ -198,8 +209,8 @@ int main(int argc, char** argv){
         
 		//printf("Exiting process %u.\n", getpid());
         
-
-		//TODO: select based polling here
+        printf("\n\n====================== READ FROM CONTROLLER PIPE ======================\n\n");        
+        netopeer_init();
 
 
         event.events = EPOLLIN | EPOLLET;
@@ -207,7 +218,7 @@ int main(int argc, char** argv){
  
         if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd_upfifo[0], &event))
         {
-            fprintf(stderr, "Failed to add file descriptor to epoll\n");
+            fprintf(stderr, "1 Failed to add file descriptor to epoll\n");
             close(epoll_fd);
             return 1;
         }
@@ -217,10 +228,23 @@ int main(int argc, char** argv){
  
         if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd_upfifo[1], &event))
         {
-            fprintf(stderr, "Failed to add file descriptor to epoll\n");
+            fprintf(stderr, "2 Failed to add file descriptor to epoll\n");
             close(epoll_fd);
             return 1;
         }
+ 
+        event.events = EPOLLIN | EPOLLET;
+        event.data.fd = CTRL2MW_fd;
+
+        if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, CTRL2MW_fd, &event))
+        {
+            fprintf(stderr, "3 Failed to add file descriptor to epoll\n");
+            close(epoll_fd);
+            return 1;
+        }
+
+        printf("Descriptors:\nupfifo1 =%d upfifo1 =%d downfifo =%d\n",fd_upfifo[0],fd_upfifo[1],CTRL2MW_fd);
+
 
         while(running)
         {
@@ -278,6 +302,32 @@ int main(int argc, char** argv){
 
                 } 
                 
+                if(events[i].data.fd == CTRL2MW_fd)
+                {
+                    printf("Reading file descriptor '%d' -- ", events[i].data.fd);
+                    bytes_read = read(events[i].data.fd, read_buffer, READ_SIZE);
+                    printf("%zd bytes read.\n", bytes_read);
+                    read_buffer[bytes_read] = '\0';
+                    printf("READ: '%s'\n", read_buffer);
+
+                    
+                    //Write to downlink pipe.
+                    printf("DOWN FIFO opened in %u.\n", getpid());
+                    itr = write(fd_downfifo[0], read_buffer, strlen(read_buffer));
+                    printf("Bytes written in pipe 1 = %d, fd-down = %d\n",itr,fd_downfifo[0]);
+                    if(itr < 0)
+                    {
+                        perror("ERROR");
+                    }
+
+                    itr = write(fd_downfifo[1], read_buffer, strlen(read_buffer));
+                    printf("Bytes written in pipe 1 = %d, fd-down = %d\n",itr,fd_downfifo[1]);
+                    if(itr < 0)
+                    {
+                        perror("ERROR");
+                    }
+
+                }
                 //if ((events[i].events & EPOLLERR || events[i].events & EPOLLHUP || !(events[i].events & EPOLLIN)) && events[i].data.fd != fd_upfifo[0]) {
                 //perror("epoll error");
                 //close(events[i].data.fd);
