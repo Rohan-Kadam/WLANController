@@ -3580,7 +3580,10 @@ static void handle_assoc(struct hostapd_data *hapd,
 	//Added by Rohan
 	//2/5/2019
 	//ASSOCIATION RESP HOOK
-
+	
+	//sleep(1);
+	//while(1);
+	
 	reply_res = send_assoc_resp(hapd, sta, mgmt->sa, resp, reassoc, pos,
 				    left);
 	os_free(tmp);
@@ -3969,6 +3972,9 @@ int ieee802_11_mgmt(struct hostapd_data *hapd, const u8 *buf, size_t len,
 	int ret = 0;
 	unsigned int freq;
 	int ssi_signal = fi ? fi->ssi_signal : 0;
+	//static int x = 0;
+	//double i,j;
+	//printf("mgmt frame no %d\n",++x);
 
 	if (len < 24)
 		return 0;
@@ -4028,7 +4034,6 @@ int ieee802_11_mgmt(struct hostapd_data *hapd, const u8 *buf, size_t len,
 		ret = 1;
 		break;
 	case WLAN_FC_STYPE_ASSOC_REQ:
-		wpa_printf(MSG_DEBUG, "mgmt::assoc_req");
 		handle_assoc(hapd, mgmt, len, 0);
 		ret = 1;
 		break;

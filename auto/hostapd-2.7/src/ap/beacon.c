@@ -981,6 +981,52 @@ void handle_probe_req(struct hostapd_data *hapd,
 				hapd->cs_c_off_ecsa_proberesp;
 	}
 
+	//Added by Rohan
+	//1/5/2019
+	//Hook to hold Probe Response
+	//=====================================================
+
+	printf("sa=" MACSTR "signal=%d\n", MAC2STR(mgmt->sa),ssi_signal);
+	
+	static char myPhone[50] = "7c:03:5e:21:61:5d";
+	static char probeReqMAC[50];
+	static char otherPhone[50] = "ac:0d:1b:e6:ba:bc";
+	static int otherPhoneCounter;
+	static int myPhoneCounter;
+
+	sprintf(probeReqMAC,MACSTR,MAC2STR(mgmt->sa));
+	printf("==>%s\n",probeReqMAC);
+
+
+	/*
+	res value denotes
+	0 -> NO_SSID_MATCH,
+	1 -> EXACT_SSID_MATCH,
+	2 -> WILDCARD_SSID_MATCH
+	*/
+	if((!(os_strcmp(probeReqMAC,myPhone)) && 
+		(res == EXACT_SSID_MATCH)
+		))
+	{
+		system("uptime");
+		printf("- Sleep -_-\n");
+		usleep(1000000);
+		system("uptime");
+		printf("- WakeUp O_O\n");
+		myPhoneCounter++;	
+	}
+
+	if(!(os_strcmp(probeReqMAC,otherPhone)))
+	{
+		otherPhoneCounter++;
+	}
+
+	printf("\n\nLG Probes = %d and Xiaomi Probes = %d\n===========================================\n\n",otherPhoneCounter,myPhoneCounter);
+	
+	//Added by Rohan
+	//1/5/2019
+	//Function to instruct driver to send packet (Probe response in this case)
+	//========================================================================
 	ret = hostapd_drv_send_mlme_csa(hapd, resp, resp_len, noack,
 					csa_offs_len ? csa_offs : NULL,
 					csa_offs_len);
