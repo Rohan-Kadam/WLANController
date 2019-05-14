@@ -51,7 +51,7 @@ int cmd_editor(const char *arg, const char* old_input_file, FILE* output, FILE* 
 //16/4/2019
 //function declaration and more
 //=================================================
-void mw_sendtoSBI(void);
+void mw_sendtoSBI(char *);
 
 int fd_downfifo, fd_upfifo;
 	

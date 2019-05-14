@@ -4116,13 +4116,15 @@ int cmd_generic_op(GENERIC_OPS op, const char* arg, FILE* output) {
 //Function to trigger edit-config on SBI
 //=================================================
 
-void MW_sendtoSBI(void)
+void MW_sendtoSBI(char * buff)
 {
 	
 	char config[200];
-	int ue_count = 2;
+	int ue_count = strlen(buff);
 	int ap_id = 2;
-	sprintf(config,"<test xmlns=\"http://example.net/test\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></test>\n",
+	//sprintf(config,"<test xmlns=\"http://example.net/test\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></test>\n",
+	//					ap_id,ue_count);
+	sprintf(config,"<update xmlns=\"http://multirat.net/m-SBI\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></update>\n",
 						ap_id,ue_count);
 	
 	printf("| MW | File:%15s | Func:%25s | Line:%6d | Creating RPC Message\n",__FILE__,__FUNCTION__,__LINE__);

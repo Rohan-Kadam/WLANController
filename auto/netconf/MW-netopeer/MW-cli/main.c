@@ -143,6 +143,7 @@ int main(int argc, char** argv) {
 	//int c2s, s2c;
 	char buffer[100];
 	char *msg = "Demo Message from neto-cli";
+	int ret;
 
 	/* signal handling */
 	sigfillset(&block_mask);
@@ -167,9 +168,12 @@ int main(int argc, char** argv) {
 	printf("argv = %s %s\n",argv[1],argv[2]);
 	
 
-	fd_downfifo = open(argv[1], O_RDONLY, O_NONBLOCK);
-	fd_upfifo = open(argv[2], O_WRONLY , O_NONBLOCK);
+	//fd_downfifo = open(argv[1], O_RDONLY, O_NONBLOCK);
+	//fd_upfifo = open(argv[2], O_WRONLY , O_NONBLOCK);
 
+
+	fd_downfifo = open(argv[1], O_RDONLY);
+	fd_upfifo = open(argv[2], O_WRONLY );
 
 	//s2c= open(argv[1], O_RDONLY | O_NONBLOCK);
     //c2s= open(argv[2], O_WRONLY | O_NONBLOCK);
@@ -262,6 +266,7 @@ int main(int argc, char** argv) {
 				
 				printf("| MW | File:%15s | Func:%25s | Line:%6d | Entering sendtoSBI Loop\n",__FILE__,__FUNCTION__,__LINE__);
 			
+				/* Commented to test downlink connection
 				while(1)
 				{
 					//Nothing
@@ -273,12 +278,20 @@ int main(int argc, char** argv) {
 				}
 				//This function is used to call a pre-defined static function from commands.c
 				MW_sendtoSBI();
-				
+				*/
 				//read(s2c, &buf, sizeof(char)*10);
-				
-				read(fd_downfifo, buffer, sizeof(buffer));
-				printf("%s \n", buffer);
-		        write(fd_upfifo, msg, strlen(msg));
+				while(1)
+				{
+					ret = read(fd_downfifo, buffer, sizeof(buffer));
+					//printf("============> %s %d\n", buffer,ret);
+					if(ret > 0)
+					{	
+						MW_sendtoSBI(buffer);
+						memset(buffer, 0, sizeof (buffer));
+						buffer[0] = '\0';		        	
+						//write(fd_upfifo, msg, strlen(msg));
+					}		
+				}		
 				
 				//while(1);
 			
