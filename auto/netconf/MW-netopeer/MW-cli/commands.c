@@ -4124,7 +4124,7 @@ void MW_sendtoSBI(char * buff)
 	int ap_id = 2;
 	//sprintf(config,"<test xmlns=\"http://example.net/test\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></test>\n",
 	//					ap_id,ue_count);
-	sprintf(config,"<update xmlns=\"http://multirat.net/m-SBI\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></update>\n",
+	sprintf(config,"<m-SBI xmlns=\"http://multirat.net/m-SBI\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></m-SBI>\n",
 						ap_id,ue_count);
 	
 	printf("| MW | File:%15s | Func:%25s | Line:%6d | Creating RPC Message\n",__FILE__,__FUNCTION__,__LINE__);
