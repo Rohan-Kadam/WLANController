@@ -102,6 +102,8 @@ int main(int argc, char** argv){
         //block spawning of other child processes
         ret = execl("/usr/bin/gnome-terminal", "gnome-terminal","-e",execl_str,
                       NULL);
+        //ret = execl(execl_str,
+        //              NULL);
         if(ret<0) 
         { 
         	perror("error in execl1"); exit(2); 
