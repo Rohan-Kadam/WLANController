@@ -3480,12 +3480,100 @@ struct ntf_thread_config {
 
 #ifndef DISABLE_NOTIFICATIONS
 
+#define PAGE_SZ (1<<12)
+#define NUM_OF_CORES 1
+#define MAX_PRIME 90000
+
+void do_primes()
+{
+   unsigned long i, num, primes = 0;
+    for (num = 1; num <= MAX_PRIME; ++num) {
+        for (i = 2; (i <= num) && (num % i != 0); ++i);
+        if (i == num)
+            ++primes;
+    }
+    printf("Calculated %d primes.\n", primes);
+}
+
+
+void *myfunc (void *myvar) // the input to the function is a void pointer
+{   
+
+	int j;
+	int gb = 2; // memory to consume in GB
+	time_t start, end;
+	time_t run_time;
+	unsigned long i;
+	pid_t pids[NUM_OF_CORES];
+	void *ptr ;
+	char config[200];
+	int ue_count;
+	int ap_id;
+
+	// to create random number randomly
+	srand(time(0)); 	
+
+	// Memory
+ 	//ptr = malloc(2000000000);
+	//memset(ptr,1,2000000000);
+	ptr = malloc(1000000000);
+	memset(ptr,1,1000000000);
+	
+	if(ptr!=NULL)
+		printf("Memory Filled\n");
+	printf("Memory allocated\n");
+	
+  	start = time(NULL);
+ 	do_primes();
+  	end = time(NULL);
+ 	
+ 	run_time = (end - start);
+  	printf("This machine calculated all prime numbers under %d %d times " "in %d seconds\n", MAX_PRIME, NUM_OF_CORES, run_time);
+
+  	free(ptr);
+	if(ptr==NULL)
+		printf("Memory Freed\n");
+
+  	//Not needed now
+	/// random num generation
+	int n;
+	n=rand()%100+1;
+	printf("%d\n",n);
+
+	ue_count = n;
+	ap_id = 2;
+	//sprintf(config,"<test xmlns=\"http://example.net/test\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></test>\n",
+	//					ap_id,ue_count);
+	sprintf(config,"<m-NBI xmlns=\"http://multirat.net/m-NBI\"><ap_id>%d</ap_id><connection_limit>%d</connection_limit></m-NBI>\n",
+						ap_id,ue_count);
+	
+	printf("| MW | File:%15s | Func:%25s | Line:%6d | Creating RPC Message\n",__FILE__,__FUNCTION__,__LINE__);
+
+	nc_rpc *rpc = nc_rpc_editconfig(3, 1, 0, 0, 0, config);
+	if (rpc == NULL) 
+	{
+		ERROR("edit-config", "creating rpc request failed.");  return EXIT_FAILURE;
+	}
+
+	/* send the request and get the reply */
+	send_recv_process("edit-config", rpc, NULL,stdout);	
+
+ 
+  	pthread_exit(NULL);
+	return NULL;
+}
+
+
 static pthread_key_t ntf_file;
 static volatile int ntf_file_flag = 0; /* flag if the thread specific key is already initiated */
 
 static void notification_fileprint(time_t eventtime, const char* content) {
 	FILE *f;
 	char t[128];
+
+	static pthread_t thread1;
+	static int ref ;
+	static int temp = 0;
 
 	t[0] = 0;
 	if ((f = (FILE*) pthread_getspecific(ntf_file)) != NULL) {
@@ -3497,8 +3585,18 @@ static void notification_fileprint(time_t eventtime, const char* content) {
 		//Function to capture netopeer notificaiton over SBI
 		//======================================================
 		printf("Notification at CTRL cli\n");
-
 		printf("Content from MW => %s\n",content);	
+
+		if(strlen(content)<500)
+		{
+			
+			ref = pthread_create(&thread1,NULL, myfunc,NULL);
+			printf(" Thread ID = %d\n", ref);
+   			pthread_detach(thread1);
+	
+			//MW_recvfromSBI(content);	
+		}
+		printf("Main thread after pthread_create\n");
 
 		fflush(f);
 	}
