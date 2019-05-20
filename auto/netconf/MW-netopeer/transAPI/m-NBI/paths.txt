@@ -1,2 +1,2 @@
-m-NBI=http://multirat.net/m-NBI
-/mn:update
+mn=http://multirat.net/m-NBI
+/mn:m-NBI

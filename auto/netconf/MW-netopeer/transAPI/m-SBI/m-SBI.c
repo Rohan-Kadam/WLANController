@@ -82,7 +82,7 @@ xmlDocPtr get_state_data(xmlDocPtr model, xmlDocPtr running, struct nc_err **err
  * Mapping prefixes with namespaces.
  * Do NOT modify this structure!
  */
-struct ns_pair namespace_mapping[] = {{"m-SBI", "http://multirat.net/m-SBI"}, {NULL, NULL}};
+struct ns_pair namespace_mapping[] = {{"ms", "http://multirat.net/m-SBI"}, {NULL, NULL}};
 
 /*
  * CONFIGURATION callbacks
@@ -91,7 +91,7 @@ struct ns_pair namespace_mapping[] = {{"m-SBI", "http://multirat.net/m-SBI"}, {N
  */
 
 /**
- * @brief This callback will be run when node in path /ms:update changes
+ * @brief This callback will be run when node in path /ms:m-SBI changes
  *
  * @param[in] data	Double pointer to void. Its passed to every callback. You can share data using it.
  * @param[in] op	Observed change in path. XMLDIFF_OP type.
@@ -102,8 +102,8 @@ struct ns_pair namespace_mapping[] = {{"m-SBI", "http://multirat.net/m-SBI"}, {N
  * @return EXIT_SUCCESS or EXIT_FAILURE
  */
 /* !DO NOT ALTER FUNCTION SIGNATURE! */
-int callback_ms_update(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodePtr new_node, struct nc_err **error) {
-	
+int callback_ms_m_SBI(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodePtr new_node, struct nc_err **error) {
+
 	if (op & (XMLDIFF_ADD | XMLDIFF_MOD)) {
 
 		int fd; 
@@ -116,8 +116,8 @@ int callback_ms_update(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodeP
 		strcat(buffer,new_node->children->next->children->content);
 
 		//Todo: Check if pipe already exist
-		char * myfifo = "/tmp/myfifo1";
-		mkfifo(myfifo, 0777);
+		char * myfifo = "/tmp/MW2AP_FIFO";
+		//mkfifo(myfifo, 0777);
 
 		//Open Pipe
 		fd = open(myfifo, O_WRONLY, O_NONBLOCK);
@@ -129,6 +129,7 @@ int callback_ms_update(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodeP
 		close(fd); 
 
 	}
+
 
 	return EXIT_SUCCESS;
 }
@@ -142,7 +143,7 @@ struct transapi_data_callbacks clbks =  {
 	.callbacks_count = 1,
 	.data = NULL,
 	.callbacks = {
-		{.path = "/ms:update", .func = callback_ms_update}
+		{.path = "/ms:m-SBI", .func = callback_ms_m_SBI}
 	}
 };
 

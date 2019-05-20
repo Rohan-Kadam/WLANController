@@ -1,2 +1,2 @@
-m-SBI=http://multirat.net/m-SBI
-/ms:update
+ms=http://multirat.net/m-SBI
+/ms:m-SBI

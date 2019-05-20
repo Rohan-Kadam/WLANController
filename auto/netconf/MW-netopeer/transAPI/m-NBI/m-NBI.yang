@@ -21,7 +21,7 @@ module m-NBI {
 		} 
  	}
   
-	container update {
+	container m-NBI {
    		uses info;	
    	}
 

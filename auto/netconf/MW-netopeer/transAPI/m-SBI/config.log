@@ -36,6 +36,7 @@ PATH: /bin
 PATH: /usr/games
 PATH: /usr/local/games
 PATH: /snap/bin
+PATH: /home/user/.local/bin
 
 
 ## ----------- ##
@@ -323,7 +324,7 @@ configure:11250: checking whether to build static libraries
 configure:11254: result: yes
 configure:11298: checking for library containing ncds_apply_rpc2all
 configure:11329: gcc -o conftest  -O3   conftest.c  >&5
-/tmp/cckItnUb.o: In function `main':
+/tmp/ccwDsWTR.o: In function `main':
 conftest.c:(.text.startup+0x7): undefined reference to `ncds_apply_rpc2all'
 collect2: error: ld returned 1 exit status
 configure:11329: $? = 1

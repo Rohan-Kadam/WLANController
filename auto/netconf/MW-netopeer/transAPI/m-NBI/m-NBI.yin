@@ -17,7 +17,7 @@ And also defines list of configurable parameters</text>
       <type name="string"/>
     </leaf>
   </grouping>
-  <container name="update">
+  <container name="m-NBI">
     <uses name="info"/>
   </container>
   <notification name="halted">

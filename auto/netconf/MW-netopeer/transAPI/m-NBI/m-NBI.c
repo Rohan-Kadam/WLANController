@@ -82,7 +82,7 @@ xmlDocPtr get_state_data(xmlDocPtr model, xmlDocPtr running, struct nc_err **err
  * Mapping prefixes with namespaces.
  * Do NOT modify this structure!
  */
-struct ns_pair namespace_mapping[] = {{"m-NBI", "http://multirat.net/m-NBI"}, {NULL, NULL}};
+struct ns_pair namespace_mapping[] = {{"mn", "http://multirat.net/m-NBI"}, {NULL, NULL}};
 
 /*
  * CONFIGURATION callbacks
@@ -91,7 +91,7 @@ struct ns_pair namespace_mapping[] = {{"m-NBI", "http://multirat.net/m-NBI"}, {N
  */
 
 /**
- * @brief This callback will be run when node in path /mn:update changes
+ * @brief This callback will be run when node in path /mn:m-NBI changes
  *
  * @param[in] data	Double pointer to void. Its passed to every callback. You can share data using it.
  * @param[in] op	Observed change in path. XMLDIFF_OP type.
@@ -102,11 +102,11 @@ struct ns_pair namespace_mapping[] = {{"m-NBI", "http://multirat.net/m-NBI"}, {N
  * @return EXIT_SUCCESS or EXIT_FAILURE
  */
 /* !DO NOT ALTER FUNCTION SIGNATURE! */
-int callback_mn_update(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodePtr new_node, struct nc_err **error) {
+int callback_mn_m_NBI(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodePtr new_node, struct nc_err **error) {
 	
 	if (op & (XMLDIFF_ADD | XMLDIFF_MOD)) {
 
-		int fd; 
+		int fd,ret; 
 		char buffer[10]={0};
 
 		//Serialize the update parameters before sending it over a pipe
@@ -116,14 +116,16 @@ int callback_mn_update(void **data, XMLDIFF_OP op, xmlNodePtr old_node, xmlNodeP
 		strcat(buffer,new_node->children->next->children->content);
 
 		//Todo: Check if pipe already exist
-		char * myfifo = "/tmp/NBIfifo";
-		mkfifo(myfifo, 0777);
+		char * myfifo = "/tmp/CTRL2MW_FIFO";
+		//mkfifo(myfifo, 0777);
 
 		//Open Pipe
 		fd = open(myfifo, O_WRONLY, O_NONBLOCK);
+		//fprintf(stdout,"============> fd of new pipe = %d\n",fd);
 
 		//Write Pipe
-		write(fd, buffer, strlen(buffer)+1); 
+		ret = write(fd, buffer, strlen(buffer)+1); 
+		//fprintf(stdout,"============> return of write call = %d\n",ret);
 		
 		//Close Pipe
 		close(fd); 
@@ -141,7 +143,7 @@ struct transapi_data_callbacks clbks =  {
 	.callbacks_count = 1,
 	.data = NULL,
 	.callbacks = {
-		{.path = "/mn:update", .func = callback_mn_update}
+		{.path = "/mn:m-NBI", .func = callback_mn_m_NBI}
 	}
 };
 
