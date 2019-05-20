@@ -4001,7 +4001,7 @@ static int hostapd_global_ctrl_iface_ifname(struct hapd_interfaces *interfaces,
 						  from, fromlen);
 }
 
-	//Added by Rohan
+//Added by Rohan
 //24/4/2019
 //Epoll event handler for netopeer downlink pipe 
 //=====================================================
@@ -4011,6 +4011,56 @@ static void netopeer_recv(int pipe_fd, void *eloop_ctx, void *pipe_ctx)
 {
 	struct hapd_interfaces *interfaces = eloop_ctx;
 	printf("*********** Inside netopeer_recv handler *********** \n");
+
+	size_t bytes_read;
+	char read_buffer[READ_SIZE + 1];
+	
+
+
+	//Get hapd
+	struct hostapd_data *hapd;
+	size_t i, j;
+
+	for (i = 0; i < interfaces->count; i++) 
+	{
+		struct hostapd_iface *iface = interfaces->iface[i];
+		printf("interface->count = %d\n",interfaces->count);
+
+		for (j = 0; j < iface->num_bss; j++) 
+		{
+			printf("interface->iface->num_bss = %d\n\n",iface->num_bss);
+			hapd = iface->bss[j];
+		}
+	}	
+
+	wpa_msg(hapd->msg_ctx, MSG_INFO, "hapd obtained successfully");
+
+	//Read MW2AP_FIFO
+	bytes_read = read(pipe_fd, read_buffer, READ_SIZE);
+	printf("%zd bytes read.\n", bytes_read);
+	read_buffer[bytes_read] = '\0';
+	printf("Read: %s\n", read_buffer);
+
+
+	wpa_msg(hapd->msg_ctx, MSG_INFO, "Read: %s", read_buffer);
+
+
+	//Decode incoming packet
+	//Update config using hapd structure in interfaces
+
+
+}
+
+//Added by Rohan
+//15/5/2019
+//Epoll event handler for simue downlink pipe 
+//=====================================================
+//#define READ_SIZE 10
+
+static void simue_recv(int pipe_fd, void *eloop_ctx, void *pipe_ctx)
+{
+	struct hapd_interfaces *interfaces = eloop_ctx;
+	printf("*********** Inside simue_recv handler *********** \n");
 
 	size_t bytes_read;
 	char read_buffer[READ_SIZE + 1];
@@ -4278,6 +4328,49 @@ fail:
 
     return -1;
 }
+
+//Added by Rohan
+//15/5/2019
+//Register simue downlink pipe as an epoll event 
+//=====================================================
+
+int simue_init(struct hapd_interfaces *interface)
+{
+	int simUeDl_fd;
+    char *simUeDl_pathname = "/tmp/SimUeDL_FIFO";
+    
+    if((mkfifo(simUeDl_pathname, S_IRWXU | S_IRWXG))<0)
+    {
+		wpa_printf(MSG_ERROR, "Could not create named pipe %s Error = %s.\n", simUeDl_pathname, strerror(errno));
+    	goto fail;
+    }
+
+    if((simUeDl_fd = open(simUeDl_pathname, O_RDWR))<0)
+    {
+   		wpa_printf(MSG_ERROR, "Error opening FIFO Error = %s.\n", strerror(errno));
+   		goto fail;
+    }
+
+
+    eloop_register_read_sock(simUeDl_fd, simue_recv, interface, NULL);
+
+    return 0;
+
+fail:
+	if((unlink(simUeDl_pathname))<0)
+	{
+		wpa_printf(MSG_ERROR, "Error erasing %s.\n", simUeDl_pathname);
+    } 
+    else 
+    {
+		wpa_printf(MSG_ERROR, "FIFO '%s' erased.\n", simUeDl_pathname);
+    }
+    exit(EXIT_FAILURE);
+
+    return -1;
+}
+
+
 
 int hostapd_global_ctrl_iface_init(struct hapd_interfaces *interface)
 {

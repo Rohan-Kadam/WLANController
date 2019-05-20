@@ -10,6 +10,7 @@
 #define CTRL_IFACE_H
 
 int netopeer_init(struct hapd_interfaces *interface);
+int simue_init(struct hapd_interfaces *interface);
 
 #ifndef CONFIG_NO_CTRL_IFACE
 int hostapd_ctrl_iface_init(struct hostapd_data *hapd);

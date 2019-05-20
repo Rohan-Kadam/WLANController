@@ -7,7 +7,7 @@
  * This software may be distributed under the terms of the BSD license.
  * See README for more details.
  */
-
+#include <fcntl.h>
 #include "utils/includes.h"
 
 #ifndef CONFIG_NATIVE_WINDOWS
@@ -998,22 +998,93 @@ void handle_probe_req(struct hostapd_data *hapd,
 	printf("==>%s\n",probeReqMAC);
 
 
+static int flag = 1;
+static int simUeUl_fd;
+static char *simUeUl_pathname = "/tmp/SimUeUL_FIFO";
+static size_t bytes_write;
+static char write_buffer[11] = "Hello";
+
+
+//enter once here
+	if(flag)
+	{	
+	
+	retry:		
+		if((mkfifo(simUeUl_pathname, S_IRWXU | S_IRWXG))<0)
+	    {
+			wpa_printf(MSG_ERROR, "Could not create named pipe %s Error = %s.\n", simUeUl_pathname, strerror(errno));
+	    	goto fail;
+	    }
+        
+		if((simUeUl_fd = open(simUeUl_pathname, O_RDWR))<0)
+    	{
+   			wpa_printf(MSG_ERROR, "Error opening FIFO Error = %s.\n", strerror(errno));
+   			goto fail;
+    	}
+    	goto success;
+    	
+	fail:
+		if((unlink(simUeUl_pathname))<0)
+		{
+			wpa_printf(MSG_ERROR, "Error erasing %s.\n", simUeUl_pathname);
+    	} 
+    	else 
+    	{
+			wpa_printf(MSG_ERROR, "FIFO '%s' erased.\n", simUeUl_pathname);
+    	}
+    	goto retry;
+    	
+    	//exit(EXIT_FAILURE);
+		//return -1;
+
+    success:
+    	flag = 0;
+	
+//enter here once
+	}
+
+
+
 	/*
 	res value denotes
 	0 -> NO_SSID_MATCH,
 	1 -> EXACT_SSID_MATCH,
 	2 -> WILDCARD_SSID_MATCH
 	*/
+
+//Not Working
+//	if((!(os_strcmp(probeReqMAC,myPhone)) && 
+//		(res == EXACT_SSID_MATCH)
+//		))
+	
 	if((!(os_strcmp(probeReqMAC,myPhone)) && 
-		(res == EXACT_SSID_MATCH)
+		(res == WILDCARD_SSID_MATCH)
 		))
 	{
+
+
+#ifdef SIMUE
+
+		printf("Writing to UL pipe\n");
+		bytes_write = write(simUeUl_fd, write_buffer, 10);
+		printf("%zd bytes write.\n", bytes_write);
+		write_buffer[bytes_write] = '\0';
+		printf("Write: %s\n", write_buffer);
+		
+		myPhoneCounter++;	
+
+#else		
+		//Add write to notif file here
 		system("uptime");
 		printf("- Sleep -_-\n");
 		usleep(1000000);
 		system("uptime");
 		printf("- WakeUp O_O\n");
+		
 		myPhoneCounter++;	
+
+#endif	
+
 	}
 
 	if(!(os_strcmp(probeReqMAC,otherPhone)))

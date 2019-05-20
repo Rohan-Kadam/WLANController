@@ -2,6 +2,11 @@ ifndef CC
 CC=gcc
 endif
 
+# Added by Rohan
+# 15/5/2019
+# Enable below line when testing hostapd with simulated UE traffic 
+CFLAGS += -DSIMUE
+
 ifndef CFLAGS
 CFLAGS = -MMD -O2 -Wall -g -ldl
 endif

@@ -4209,6 +4209,13 @@ static void handle_assoc_cb(struct hostapd_data *hapd,
 	//======================================================
 	//Works
 	//printf("\n\nASSOCIATION REQUEST RECEIVED HOOK !!!!!!!!!!!!\n\n");
+#ifdef SIMUE
+
+	//Added by Rohan
+	//15/5/2019
+	//Send it to uplink pipe (/tmp/SimUeUL_FIFO)
+
+#else
 
 	fd_notif = fopen("/etc/toMW.txt","ab");
 
@@ -4223,6 +4230,8 @@ static void handle_assoc_cb(struct hostapd_data *hapd,
   	sprintf(msg_notif,"Association Received | MAC: %s",mac_str);
   	fputs(msg_notif, fd_notif);
     fclose(fd_notif);
+
+#endif
 
 	hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE80211,
 		       HOSTAPD_LEVEL_INFO,

@@ -884,12 +884,24 @@ int main(int argc, char *argv[])
 
 	hostapd_global_ctrl_iface_init(&interfaces);
 
+
+#ifdef SIMUE
+	printf("======================> Simulated UE ON <=====================\n");
+	//Added by Rohan
+	//15/5/2019
+	//Register simue downlink pipe as an epoll event 
+	//=====================================================	
+	simue_init(&interfaces);
+
+#else
+	printf("======================> Simulated UE OFF <=====================\n");
+
 	//Added by Rohan
 	//24/4/2019
 	//Register netopeer downlink pipe as an epoll event 
 	//=====================================================	
 	netopeer_init(&interfaces);
-
+#endif
 
 	if (hostapd_global_run(&interfaces, daemonize, pid_file)) {
 		wpa_printf(MSG_ERROR, "Failed to start eloop");
